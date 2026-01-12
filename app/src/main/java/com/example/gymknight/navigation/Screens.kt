@@ -12,7 +12,6 @@ import cafe.adriel.voyager.navigator.tab.TabOptions
 import com.example.gymknight.presentation.RootScreen
 import com.example.gymknight.presentation.addSet.AddSetScreen
 import com.example.gymknight.presentation.addExercise.AddExerciseScreen
-import com.example.gymknight.presentation.createExercise.CreateExerciseScreen
 import com.example.gymknight.presentation.exercises.ExercisesScreen
 import com.example.gymknight.presentation.main.MainScreen
 

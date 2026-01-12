@@ -100,11 +100,12 @@ fun MainScreenContent(
         },
         floatingActionButton = {
             FloatingActionButton(
-                onClick = { TODO() },
-                containerColor = Color(0xFF4CAF50)
+                onClick = onGoToAddExerciseClick,
+                containerColor = Color(0xFF4CAF50),
+                contentColor = Color.Black,
             ) {
                 Icon(Icons.Default.Add,
-                    contentDescription = "Добавить упражнение"
+                    contentDescription = "Добавить"
                 )
             }
         }
@@ -178,20 +179,6 @@ fun ExerciseCard(
                     Text(lang)
                 }
             }
-            FloatingActionButton(
-                onClick = onGoToAddExerciseClick,
-                modifier = Modifier
-                    .align(Alignment.BottomEnd)
-                    .padding(bottom = 96.dp, end = 24.dp),
-
-                containerColor = Color(0xFF4CAF50),
-                contentColor = Color.Black,
-            ) {
-                Icon(
-                    imageVector = Icons.Default.Add,
-                    contentDescription = "Добавить"
-                )
-            }
         }
     }
 }
@@ -202,7 +189,6 @@ fun ExerciseCard(
 fun MainScreenPreview() {
     MainScreenContent(
         onGoToCreateExercisesClick = {},
-        onGoToCreateExercisesClick ={},
         onGoToAddExerciseClick = {}
     )
 }
