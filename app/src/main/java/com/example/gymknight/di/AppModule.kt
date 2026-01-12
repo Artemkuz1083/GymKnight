@@ -1,11 +1,13 @@
 package com.example.gymknight.di
 
+import androidx.room.Room
+import com.example.gymknight.data.database.AppDatabase
+import com.example.gymknight.data.database.dao.ExerciseCatalogDAO
 import com.example.gymknight.data.database.dao.ExerciseDAO
 import com.example.gymknight.data.database.dao.SetDAO
 import com.example.gymknight.data.database.dao.WorkoutDAO
-import com.example.gymknight.data.entity.ExerciseEntity
-import com.example.gymknight.data.entity.WorkoutEntity
-import com.example.gymknight.data.relation.WorkoutWithExercises
+import com.example.gymknight.data.repository.ExerciseAssetRepository
+import com.example.gymknight.data.repository.ExerciseAssetRepositoryImpl
 import com.example.gymknight.data.repository.ExerciseRepository
 import com.example.gymknight.data.repository.ExerciseRepositoryImpl
 import com.example.gymknight.data.repository.SetRepository
@@ -15,61 +17,51 @@ import com.example.gymknight.data.repository.WorkoutRepositoryImpl
 import com.example.gymknight.domain.GetWorkoutUseCase
 import com.example.gymknight.domain.GetWorkoutUseCaseImpl
 import com.example.gymknight.presentation.main.MainViewModel
-import kotlinx.coroutines.flow.Flow
+import org.koin.android.ext.koin.androidContext
 import org.koin.core.module.dsl.viewModel
 import org.koin.dsl.bind
 import org.koin.dsl.module
 
 val appModule = module {
 
+    // 1. Создаем синглтон базы данных Room
     single {
-        object : ExerciseDAO{
-            override suspend fun upsertExercise(exerciseEntity: ExerciseEntity) {
-                TODO()
-            }
+        Room.databaseBuilder(
+            androidContext(),
+            AppDatabase::class.java,
+            "gym_database"
+        )
+            // Позволяет Room пересоздавать таблицы, если ты изменил Entity,
+            // но не хочешь возиться с миграциями на этапе разработки
+            .fallbackToDestructiveMigration()
+            .build()
+    }
 
-            override suspend fun deleteExercise(exercise: ExerciseEntity): Int {
-                TODO()
-            }
-        }
-    }bind ExerciseDAO::class
+    // 2. Предоставляем DAO напрямую из экземпляра базы данных
+    single { get<AppDatabase>().exerciseDAO }
+    single { get<AppDatabase>().setDAO }
+    single { get<AppDatabase>().exerciseCatalogDAO }
+    single { get<AppDatabase>().workoutDAO }
 
-    single {
-        object : SetDAO{
+    // 3. Репозитории (привязываем интерфейсы к реализациям)
+    single { ExerciseRepositoryImpl(get()) } bind ExerciseRepository::class
 
-        }
-    }bind SetDAO::class
+    single<ExerciseAssetRepository> { ExerciseAssetRepositoryImpl(androidContext()) }
 
-    single {
-        object : WorkoutDAO{
-            override fun getWorkoutByDate(
-                start: Long,
-                end: Long
-            ): Flow<WorkoutWithExercises> {
-                TODO("Not yet implemented")
-            }
-        }
-    }bind WorkoutDAO::class
+    single { SetRepositoryImpl(get()) } bind SetRepository::class
 
-    single {
-        ExerciseRepositoryImpl(get())
-    }bind ExerciseRepository::class
+    single { WorkoutRepositoryImpl(get()) } bind WorkoutRepository::class
 
-    single {
-        SetRepositoryImpl(get())
-    }bind SetRepository::class
-
-    single {
-        WorkoutRepositoryImpl(get())
-    }bind WorkoutRepository::class
-
-    single {
-        GetWorkoutUseCaseImpl(get())
-    }bind GetWorkoutUseCase::class
+    // 4. Use Cases
+    single { GetWorkoutUseCaseImpl(get()) } bind GetWorkoutUseCase::class
 }
 
 val viewModelModule = module {
     viewModel {
-        MainViewModel(get())
+        MainViewModel(
+            getWorkoutUseCase = get(),
+            exerciseCatalogDAO = get(),
+            assetProvider = get()
+        )
     }
 }

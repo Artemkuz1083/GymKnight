@@ -5,6 +5,9 @@ plugins {
     id("androidx.navigation.safeargs.kotlin")
     id("kotlin-kapt")
     id("com.google.devtools.ksp")
+
+
+    kotlin("plugin.serialization")
 }
 
 android {
@@ -85,4 +88,7 @@ dependencies {
 
     //ИКОНКИ
     implementation("androidx.compose.material:material-icons-extended")
+
+    //JSON
+    implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.7.3")
 }
