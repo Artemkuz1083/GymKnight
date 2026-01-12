@@ -1,4 +1,4 @@
-package com.example.gymknight.presentation.createExercise
+package com.example.gymknight.presentation.addSet
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
@@ -11,12 +11,12 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 
 @Composable
-fun CreateExerciseScreen() {
-    CreateExerciseScreenContent()
+fun AddSetScreen() {
+    AddSetScreenContent()
 }
 
 @Composable
-fun CreateExerciseScreenContent(){
+fun AddSetScreenContent(){
 
     Scaffold {innerPaddings ->
         Box(
@@ -30,6 +30,6 @@ fun CreateExerciseScreenContent(){
 
 @Composable
 @Preview
-fun CreateExerciseScreenPreview(){
-    CreateExerciseScreenContent()
+fun AddSetScreenPreview(){
+    AddSetScreenContent()
 }

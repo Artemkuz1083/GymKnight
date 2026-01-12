@@ -6,23 +6,26 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.DateRange
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -57,6 +60,7 @@ fun MainScreen() {
 }
 
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun MainScreenContent(
     onGoToCreateExercisesClick: () -> Unit,
@@ -64,71 +68,114 @@ fun MainScreenContent(
 ) {
     val context = LocalContext.current
 
-    val langs = listOf("Kotlin", "Java", "JavaScript", "Python", "JavaScript", "Python", "JavaScript", "Python", "JavaScript", "Python", "JavaScript", "Python")
+    val langs = listOf(
+        "Kotlin",
+        "Java",
+        "JavaScript",
+        "Python",
+        "JavaScript",
+        "Python",
+        "JavaScript",
+        "Python",
+        "JavaScript",
+        "Python",
+        "JavaScript",
+        "Python"
+    )
 
 
-    Scaffold { innerPaddings ->
-        Box(
+    Scaffold(
+        topBar = {
+            TopAppBar(
+                title = { Text("Тренировка") },
+                actions = {
+                    IconButton(onClick = { TODO() }) {
+                        Icon(
+                            imageVector = Icons.Default.DateRange,
+                            contentDescription = "Выбрать дату"
+                        )
+                    }
+                }
+            )
+        },
+        floatingActionButton = {
+            FloatingActionButton(
+                onClick = { TODO() },
+                containerColor = Color(0xFF4CAF50)
+            ) {
+                Icon(Icons.Default.Add,
+                    contentDescription = "Добавить упражнение"
+                )
+            }
+        }
+    ) { innerPaddings ->
+        LazyColumn(
             modifier = Modifier
                 .padding(innerPaddings)
-                .padding(16.dp)
+                .padding(8.dp)
                 .fillMaxSize(),
-            contentAlignment = Alignment.TopCenter
+            verticalArrangement = Arrangement.spacedBy(8.dp)
         ) {
-            LazyColumn(
+            items(6) {
+                ExerciseCard(onGoToCreateExercisesClick, langs)
+            }
+        }
+    }
+
+
+}
+
+@Composable
+fun ExerciseCard(
+    onGoToCreateExercisesClick: () -> Unit,
+    langs: List<String>
+) {
+    Card(
+        colors = CardDefaults.cardColors(
+            containerColor = MaterialTheme.colorScheme.tertiary,
+        ),
+        elevation = CardDefaults.cardElevation(
+            defaultElevation = 6.dp
+        ),
+        modifier = Modifier
+            .wrapContentSize()
+    ) {
+        Row {
+            Text(
+                text = "Жим штанги лежа",
+                textAlign = TextAlign.Center,
                 modifier = Modifier
-            ) {
-                item {
-                    Card(
-                        colors = CardDefaults.cardColors(
-                            containerColor = MaterialTheme.colorScheme.tertiary,
-                        ),
-                        elevation = CardDefaults.cardElevation(
-                            defaultElevation = 6.dp
-                        ),
-                        modifier = Modifier
-                            .wrapContentSize()
-                    ) {
-                        Row {
-                            Text(
-                                text = "Жим штанги лежа",
-                                textAlign = TextAlign.Center,
-                                modifier = Modifier
-                                    .padding(16.dp),
-                            )
+                    .padding(16.dp),
+            )
 
-                            Spacer(modifier = Modifier.weight(1f))
+            Spacer(modifier = Modifier.weight(1f))
 
-                            IconButton (onGoToCreateExercisesClick){
-                                Icon(
-                                    imageVector = Icons.Default.Add,
-                                    contentDescription = null,
-                                    tint = Color.White
-                                )
-                            }
-                            IconButton(onClick = {}) {
-                                Icon(
-                                    imageVector = Icons.Default.Delete,
-                                    contentDescription = null,
-                                    tint = Color.White
-                                )
-                            }
+            IconButton(onGoToCreateExercisesClick) {
+                Icon(
+                    imageVector = Icons.Default.Add,
+                    contentDescription = null,
+                    tint = Color.White
+                )
+            }
+            IconButton(onClick = {}) {
+                Icon(
+                    imageVector = Icons.Default.Delete,
+                    contentDescription = null,
+                    tint = Color.White
+                )
+            }
+        }
 
-                        }
-
-                        LazyRow(
-                            modifier = Modifier
-                                .fillMaxSize()
-                                .padding(16.dp),
-                            horizontalArrangement  = Arrangement.spacedBy(12.dp)
-                        ) {
-                            items(langs) { lang -> Column {
-                                Text("123")
-                                Text(lang)
-                                }
-                            }
-                        }
-                    }
+        LazyRow(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(16.dp),
+            horizontalArrangement = Arrangement.spacedBy(12.dp)
+        ) {
+            items(langs) { lang ->
+                Column {
+                    Text("123")
+                    Text(lang)
                 }
             }
             FloatingActionButton(
@@ -154,6 +201,7 @@ fun MainScreenContent(
 @Preview
 fun MainScreenPreview() {
     MainScreenContent(
+        onGoToCreateExercisesClick = {},
         onGoToCreateExercisesClick ={},
         onGoToAddExerciseClick = {}
     )
