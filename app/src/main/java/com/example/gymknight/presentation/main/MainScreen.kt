@@ -17,6 +17,7 @@ import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -32,9 +33,8 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import cafe.adriel.voyager.navigator.LocalNavigator
 import cafe.adriel.voyager.navigator.bottomSheet.LocalBottomSheetNavigator
-import com.example.gymknight.data.entity.ExerciseEntity
+import com.example.gymknight.navigation.AddExerciseNavigationScreen
 import com.example.gymknight.navigation.CreateExerciseNavigationScreen
-import com.example.gymknight.presentation.createExercise.CreateExerciseScreen
 import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
@@ -48,6 +48,9 @@ fun MainScreen() {
     MainScreenContent(
         onGoToCreateExercisesClick = {
             navigator?.push(CreateExerciseNavigationScreen())
+        },
+        onGoToAddExerciseClick = {
+            navigator?.push(AddExerciseNavigationScreen())
         }
     )
 
@@ -56,7 +59,8 @@ fun MainScreen() {
 
 @Composable
 fun MainScreenContent(
-    onGoToCreateExercisesClick: () -> Unit
+    onGoToCreateExercisesClick: () -> Unit,
+    onGoToAddExerciseClick: () -> Unit
 ) {
     val context = LocalContext.current
 
@@ -127,6 +131,20 @@ fun MainScreenContent(
                     }
                 }
             }
+            FloatingActionButton(
+                onClick = onGoToAddExerciseClick,
+                modifier = Modifier
+                    .align(Alignment.BottomEnd)
+                    .padding(bottom = 96.dp, end = 24.dp),
+
+                containerColor = Color(0xFF4CAF50),
+                contentColor = Color.Black,
+            ) {
+                Icon(
+                    imageVector = Icons.Default.Add,
+                    contentDescription = "Добавить"
+                )
+            }
         }
     }
 }
@@ -137,5 +155,6 @@ fun MainScreenContent(
 fun MainScreenPreview() {
     MainScreenContent(
         onGoToCreateExercisesClick ={},
+        onGoToAddExerciseClick = {}
     )
 }

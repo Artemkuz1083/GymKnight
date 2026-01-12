@@ -19,17 +19,31 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import cafe.adriel.voyager.navigator.LocalNavigator
 
-// Цветовая палитра как на скрине
+
 val DarkBackground = Color(0xFF121212)
 val CardBackground = Color(0xFF1E1E1E)
 val PurpleCard = Color(0xFF2D1B33)
 val GreenCard = Color(0xFF1B2D1B)
 val BlueCard = Color(0xFF1B1B2D)
 
+@Composable
+fun AddExerciseScreen(){
+    val navigator = LocalNavigator.current
+
+    AddExerciseScreenContent(
+        onCloseClick = {
+            navigator?.pop()
+        }
+    )
+}
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun AddExerciseScreen() {
+fun AddExerciseScreenContent(
+    onCloseClick: () -> Unit
+) {
     Scaffold(
         topBar = {
             TopAppBar(
@@ -54,31 +68,30 @@ fun AddExerciseScreen() {
                 .padding(horizontal = 16.dp),
             verticalArrangement = Arrangement.spacedBy(8.dp)
         ) {
-            // Сетка быстрых действий
             item {
                 QuickActionsGrid()
                 Spacer(modifier = Modifier.height(16.dp))
             }
 
-            // Список категорий
             items(getExerciseCategories()) { category ->
                 CategoryItem(category)
             }
 
             item {
-                Spacer(modifier = Modifier.height(80.dp)) // Отступ под кнопку "Закрыть"
+                Spacer(modifier = Modifier.height(80.dp))
             }
         }
 
-        // Кнопка Закрыть (можно сделать Floating или внизу экрана)
         Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.BottomEnd) {
             Text(
                 text = "ЗАКРЫТЬ",
                 modifier = Modifier
-                    .padding(16.dp)
+                    .padding(bottom = 64.dp, end = 20.dp)
                     .background(Color(0xFF252525), RoundedCornerShape(8.dp))
-                    .padding(horizontal = 24.dp, vertical = 12.dp)
-                    .clickable { },
+                    .clickable {
+                        onCloseClick()
+                    }
+                    .padding(horizontal = 24.dp, vertical = 12.dp),
                 color = Color.White,
                 fontWeight = FontWeight.Bold
             )
@@ -154,8 +167,10 @@ fun getExerciseCategories() = listOf(
 
 @Preview
 @Composable
-fun PreviewAddExercise() {
+fun AddExerciseScreenPreview() {
     MaterialTheme {
-        AddExerciseScreen()
+        AddExerciseScreenContent(
+            onCloseClick = {}
+        )
     }
 }
