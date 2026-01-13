@@ -1,6 +1,7 @@
 package com.example.gymknight.presentation.exerciseByCategory
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -31,11 +32,13 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.ViewModel
 import cafe.adriel.voyager.core.screen.Screen
 import cafe.adriel.voyager.navigator.LocalNavigator
 import com.example.gymknight.data.entity.ExerciseCatalogEntity
@@ -61,10 +64,18 @@ fun ExerciseByCategoryScreen(categoryName: String) {
     val exercises by viewModel.getExerciseByCategory(categoryName)
         .collectAsState(initial = emptyList())
 
+    val todayWorkout by viewModel.todayWorkout.collectAsState()
+
     ExerciseByCategoryScreenContent(
         categoryName = categoryName,
         exercises = exercises,
-        onBackClick = { navigator?.pop()}
+        onBackClick = { navigator?.pop()},
+        onExerciseClick = { exerciseName ->
+            todayWorkout?.workout?.id?.let { workoutId ->
+                viewModel.addExercise(workoutId, exerciseName)
+                navigator?.popUntilRoot()
+            }
+        }
     )
 }
 
@@ -73,7 +84,8 @@ fun ExerciseByCategoryScreen(categoryName: String) {
 fun ExerciseByCategoryScreenContent(
     categoryName: String,
     exercises: List<ExerciseCatalogEntity>,
-    onBackClick: () -> Unit = {}
+    onBackClick: () -> Unit = {},
+    onExerciseClick: (String) -> Unit
 ) {
     Scaffold(
         topBar = {
@@ -99,18 +111,25 @@ fun ExerciseByCategoryScreenContent(
             item { Spacer(modifier = Modifier.height(8.dp)) }
 
             items(exercises) { exercise ->
-                ExerciseItem(exercise)
+                ExerciseItem(
+                    exercise,
+                    onClick = {onExerciseClick(exercise.name)})
             }
         }
     }
 }
 
 @Composable
-fun ExerciseItem(exercise: ExerciseCatalogEntity) {
+fun ExerciseItem(
+    exercise: ExerciseCatalogEntity,
+    onClick: () -> Unit
+) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .background(CardBg, RoundedCornerShape(12.dp))
+            .clip(RoundedCornerShape(12.dp)) // Чтобы эффект нажатия был скругленным
+            .background(CardBg)
+            .clickable { onClick() } // Обработка нажатия
             .padding(12.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
@@ -143,6 +162,7 @@ fun ExerciseByCategoryScreenPreview(){
         exercises = listOf(
             ExerciseCatalogEntity(1, "Жим лежа", "Грудь"),
             ExerciseCatalogEntity(2, "Разведение гантелей", "Грудь")
-        )
+        ),
+        onExerciseClick = {}
     )
 }

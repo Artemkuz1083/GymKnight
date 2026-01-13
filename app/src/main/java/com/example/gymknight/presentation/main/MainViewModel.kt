@@ -11,6 +11,7 @@ import com.example.gymknight.domain.AddExerciseUseCase
 import com.example.gymknight.domain.AddSetUseCase
 import com.example.gymknight.domain.AddWorkoutUseCase
 import com.example.gymknight.domain.GetExerciseByCategoryUseCase
+import com.example.gymknight.domain.GetWorkoutByDateUseCase
 import com.example.gymknight.domain.GetWorkoutUseCase
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
@@ -22,6 +23,7 @@ import kotlinx.coroutines.launch
 
 class MainViewModel(
     private val getWorkoutUseCase: GetWorkoutUseCase,
+    private val getWorkoutByDateUseCase: GetWorkoutByDateUseCase,
     private val getExerciseByCategoryUseCase: GetExerciseByCategoryUseCase,
     private val exerciseCatalogDAO: ExerciseCatalogDAO,
     private val assetProvider: ExerciseAssetRepository,
@@ -50,8 +52,8 @@ class MainViewModel(
         // Добавляем тренировку на сегодня и потом упражнения, когда она появится
         viewModelScope.launch {
             val workout = addWorkoutUseCase(getTodayStart()) // findOrCreate
-            addExerciseUseCase(workout.id, "Жим лежа")
-            addExerciseUseCase(workout.id, "Тяга верхнего блока")
+//            addExerciseUseCase(workout.id, "Жим лежа")
+//            addExerciseUseCase(workout.id, "Тяга верхнего блока")
         }
     }
 
@@ -68,6 +70,8 @@ class MainViewModel(
             )
 
 
+    fun getWorkoutByDate(start: Long, end: Long): StateFlow<WorkoutWithExercises?> {
+        return getWorkoutByDateUseCase(start, end)
     fun addSet(exerciseId: Long, weight: Double, repetitions: Int) {
         viewModelScope.launch {
             addSetUseCase(exerciseId, weight, repetitions)
