@@ -18,6 +18,8 @@ import com.example.gymknight.domain.AddSetUseCase
 import com.example.gymknight.domain.AddSetUseCaseImpl
 import com.example.gymknight.domain.AddWorkoutUseCase
 import com.example.gymknight.domain.AddWorkoutUseCaseImpl
+import com.example.gymknight.domain.DeleteExerciseUseCase
+import com.example.gymknight.domain.DeleteExerciseUseCaseImpl
 import com.example.gymknight.domain.GetExerciseByCategoryUseCase
 import com.example.gymknight.domain.GetExerciseByCategoryUseCaseImpl
 import com.example.gymknight.domain.GetWorkoutByDateUseCase
@@ -28,6 +30,7 @@ import com.example.gymknight.presentation.main.MainViewModel
 import org.koin.android.ext.koin.androidContext
 import org.koin.core.module.dsl.viewModel
 import org.koin.dsl.bind
+import org.koin.dsl.binds
 import org.koin.dsl.module
 
 val appModule = module {
@@ -52,7 +55,7 @@ val appModule = module {
     single { get<AppDatabase>().workoutDAO }
 
     // 3. Репозитории (привязываем интерфейсы к реализациям)
-    single { ExerciseRepositoryImpl(get())} bind ExerciseRepository::class
+    single { ExerciseRepositoryImpl(get()) } bind ExerciseRepository::class
 
     single<ExerciseAssetRepository> { ExerciseAssetRepositoryImpl(androidContext()) }
 
@@ -74,6 +77,10 @@ val appModule = module {
     single { AddWorkoutUseCaseImpl(get()) } bind AddWorkoutUseCase::class
 
     single { AddSetUseCaseImpl(get()) } bind AddSetUseCase::class
+
+    single { DeleteExerciseUseCaseImpl(get()) } bind DeleteExerciseUseCase::class
+
+
 }
 
 val viewModelModule = module {
@@ -86,7 +93,8 @@ val viewModelModule = module {
             addExerciseUseCase = get(),
             addWorkoutUseCase = get(),
             getWorkoutByDateUseCase = get(),
-            addSetUseCase = get()
+            addSetUseCase = get(),
+            deleteExerciseUseCase = get()
         )
     }
 }

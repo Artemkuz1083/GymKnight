@@ -10,6 +10,7 @@ import com.example.gymknight.data.repository.ExerciseAssetRepository
 import com.example.gymknight.domain.AddExerciseUseCase
 import com.example.gymknight.domain.AddSetUseCase
 import com.example.gymknight.domain.AddWorkoutUseCase
+import com.example.gymknight.domain.DeleteExerciseUseCase
 import com.example.gymknight.domain.GetExerciseByCategoryUseCase
 import com.example.gymknight.domain.GetWorkoutByDateUseCase
 import com.example.gymknight.domain.GetWorkoutUseCase
@@ -29,7 +30,8 @@ class MainViewModel(
     private val assetProvider: ExerciseAssetRepository,
     private val addExerciseUseCase: AddExerciseUseCase,
     private val addWorkoutUseCase: AddWorkoutUseCase,
-    private val addSetUseCase: AddSetUseCase
+    private val addSetUseCase: AddSetUseCase,
+    private val deleteExerciseUseCase: DeleteExerciseUseCase
     ) : ViewModel() {
 
     val todayWorkout: StateFlow<WorkoutWithExercises?> =
@@ -47,13 +49,6 @@ class MainViewModel(
                 val list = assetProvider.getExercisesFromJson()
                 exerciseCatalogDAO.insertAll(list)
             }
-        }
-
-        // Добавляем тренировку на сегодня и потом упражнения, когда она появится
-        viewModelScope.launch {
-            val workout = addWorkoutUseCase(getTodayStart()) // findOrCreate
-//            addExerciseUseCase(workout.id, "Жим лежа")
-//            addExerciseUseCase(workout.id, "Тяга верхнего блока")
         }
     }
 
@@ -80,7 +75,9 @@ class MainViewModel(
     }
 
     fun deleteExercise(exercise: ExerciseEntity) {
-        
+        viewModelScope.launch {
+            deleteExerciseUseCase(exercise)
+        }
     }
 
     fun addExercise(workoutId: Long, title: String) {
