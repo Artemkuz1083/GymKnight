@@ -2,10 +2,6 @@ package com.example.gymknight.di
 
 import androidx.room.Room
 import com.example.gymknight.data.database.AppDatabase
-import com.example.gymknight.data.database.dao.ExerciseCatalogDAO
-import com.example.gymknight.data.database.dao.ExerciseDAO
-import com.example.gymknight.data.database.dao.SetDAO
-import com.example.gymknight.data.database.dao.WorkoutDAO
 import com.example.gymknight.data.repository.ExerciseAssetRepository
 import com.example.gymknight.data.repository.ExerciseAssetRepositoryImpl
 import com.example.gymknight.data.repository.ExerciseRepository
@@ -14,11 +10,14 @@ import com.example.gymknight.data.repository.SetRepository
 import com.example.gymknight.data.repository.SetRepositoryImpl
 import com.example.gymknight.data.repository.WorkoutRepository
 import com.example.gymknight.data.repository.WorkoutRepositoryImpl
+import com.example.gymknight.domain.AddExerciseUseCase
+import com.example.gymknight.domain.AddExerciseUseCaseImpl
+import com.example.gymknight.domain.AddWorkoutUseCase
+import com.example.gymknight.domain.AddWorkoutUseCaseImpl
 import com.example.gymknight.domain.GetExerciseByCategoryUseCase
 import com.example.gymknight.domain.GetExerciseByCategoryUseCaseImpl
 import com.example.gymknight.domain.GetWorkoutUseCase
 import com.example.gymknight.domain.GetWorkoutUseCaseImpl
-import com.example.gymknight.presentation.addExercise.getExerciseCategories
 import com.example.gymknight.presentation.main.MainViewModel
 import org.koin.android.ext.koin.androidContext
 import org.koin.core.module.dsl.viewModel
@@ -49,7 +48,6 @@ val appModule = module {
     // 3. Репозитории (привязываем интерфейсы к реализациям)
     single { ExerciseRepositoryImpl(get(), get()) } bind ExerciseRepository::class
 
-
     single<ExerciseAssetRepository> { ExerciseAssetRepositoryImpl(androidContext()) }
 
     single { SetRepositoryImpl(get()) } bind SetRepository::class
@@ -60,6 +58,10 @@ val appModule = module {
     single { GetWorkoutUseCaseImpl(get()) } bind GetWorkoutUseCase::class
 
     single { GetExerciseByCategoryUseCaseImpl(get()) } bind GetExerciseByCategoryUseCase::class
+
+    single { AddExerciseUseCaseImpl(get()) } bind AddExerciseUseCase::class
+
+    single { AddWorkoutUseCaseImpl(get()) } bind AddWorkoutUseCase::class
 }
 
 val viewModelModule = module {
@@ -68,7 +70,9 @@ val viewModelModule = module {
             getWorkoutUseCase = get(),
             getExerciseByCategoryUseCase = get(),
             exerciseCatalogDAO = get(),
-            assetProvider = get()
+            assetProvider = get(),
+            addExerciseUseCase = get(),
+            addWorkoutUseCase = get()
         )
     }
 }

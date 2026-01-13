@@ -11,6 +11,8 @@ interface ExerciseRepository  {
     suspend fun deleteExercise(exercise: ExerciseEntity): Int
 
     fun getExerciseByCategory(category: String): Flow<List<ExerciseCatalogEntity>>
+
+    suspend fun addExercise( workoutId: Long, title: String)
 }
 
 class ExerciseRepositoryImpl @Inject constructor(
@@ -24,5 +26,13 @@ class ExerciseRepositoryImpl @Inject constructor(
     override fun getExerciseByCategory(category: String): Flow<List<ExerciseCatalogEntity>>{
         return catalogDao.getExerciseByCategory(category)
     }
-    
+
+    override suspend fun addExercise(workoutId: Long, title: String) {
+        dao.insertExercise(
+            ExerciseEntity(
+                workoutId = workoutId,
+                title = title
+            )
+        )
+    }
 }
