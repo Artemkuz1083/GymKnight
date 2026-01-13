@@ -20,6 +20,10 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import cafe.adriel.voyager.navigator.LocalNavigator
+import com.example.gymknight.presentation.exerciseByCategory.ExerciseByCategoryScreen
+import com.example.gymknight.presentation.exerciseByCategory.ExerciseByCategoryScreenContent
+import com.example.gymknight.presentation.exerciseByCategory.ExerciseByCategoryVoyagerScreen
+import com.example.gymknight.presentation.exercises.ExercisesScreen
 
 
 val DarkBackground = Color(0xFF121212)
@@ -33,6 +37,9 @@ fun AddExerciseScreen(){
     val navigator = LocalNavigator.current
 
     AddExerciseScreenContent(
+        onCategoryClick = { categoryName ->
+            navigator?.push(ExerciseByCategoryVoyagerScreen(categoryName))
+        } ,
         onCloseClick = {
             navigator?.pop()
         }
@@ -42,6 +49,7 @@ fun AddExerciseScreen(){
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AddExerciseScreenContent(
+    onCategoryClick: (String) -> Unit,
     onCloseClick: () -> Unit
 ) {
     Scaffold(
@@ -74,7 +82,12 @@ fun AddExerciseScreenContent(
             }
 
             items(getExerciseCategories()) { category ->
-                CategoryItem(category)
+                CategoryItem(
+                    category = category,
+                    onClick = {
+                        onCategoryClick(category.name)
+                    }
+                )
             }
 
             item {
@@ -132,12 +145,13 @@ fun ActionCard(title: String, icon: ImageVector, bgColor: Color, tint: Color, mo
 }
 
 @Composable
-fun CategoryItem(category: ExerciseCategory) {
+fun CategoryItem(category: ExerciseCategory, onClick: () -> Unit) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
             .clip(RoundedCornerShape(12.dp))
             .background(CardBackground)
+            .clickable { onClick() }
             .padding(16.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
@@ -170,7 +184,8 @@ fun getExerciseCategories() = listOf(
 fun AddExerciseScreenPreview() {
     MaterialTheme {
         AddExerciseScreenContent(
-            onCloseClick = {}
+            onCloseClick = {},
+            onCategoryClick = {}
         )
     }
 }

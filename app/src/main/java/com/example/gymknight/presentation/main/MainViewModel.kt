@@ -9,8 +9,10 @@ import com.example.gymknight.data.relation.WorkoutWithExercises
 import com.example.gymknight.data.repository.ExerciseAssetRepository
 import com.example.gymknight.data.repository.ExerciseAssetRepositoryImpl
 import com.example.gymknight.data.repository.WorkoutRepository
+import com.example.gymknight.domain.GetExerciseByCategoryUseCase
 import com.example.gymknight.domain.GetWorkoutUseCase
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.firstOrNull
@@ -20,6 +22,7 @@ import kotlinx.serialization.json.Json
 
 class MainViewModel(
     private val getWorkoutUseCase: GetWorkoutUseCase,
+    private val getExerciseByCategoryUseCase: GetExerciseByCategoryUseCase,
     private val exerciseCatalogDAO: ExerciseCatalogDAO,
     private val assetProvider: ExerciseAssetRepository
 
@@ -27,26 +30,19 @@ class MainViewModel(
     ) : ViewModel() {
 
     init {
+        // Загрузка данных из JSON в БД при первом запуске
         viewModelScope.launch(Dispatchers.IO) {
             val count = exerciseCatalogDAO.count()
-            android.util.Log.d("GymKnight", "Элементов в базе: $count")
-
             if (count == 0) {
                 val list = assetProvider.getExercisesFromJson()
                 exerciseCatalogDAO.insertAll(list)
-                android.util.Log.d("GymKnight", "Данные загружены")
-            }
-
-            // ПРОВЕРКА ЧТЕНИЯ: Подписываемся на Flow и выводим первый элемент
-            exerciseCatalogDAO.getAll().collect { exercises ->
-                if (exercises.isNotEmpty()) {
-                    android.util.Log.d("GymKnight", "Данные из БД получены! Первое упражнение: ${exercises.first().name}")
-                }
             }
         }
     }
 
-
+    fun getExerciseByCategory(category: String): Flow<List<ExerciseCatalogEntity>>{
+        return getExerciseByCategoryUseCase(category)
+    }
 
     fun getWorkout(start: Long, end: Long): StateFlow<WorkoutWithExercises?> =
         getWorkoutUseCase(start, end)

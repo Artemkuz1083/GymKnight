@@ -14,8 +14,11 @@ import com.example.gymknight.data.repository.SetRepository
 import com.example.gymknight.data.repository.SetRepositoryImpl
 import com.example.gymknight.data.repository.WorkoutRepository
 import com.example.gymknight.data.repository.WorkoutRepositoryImpl
+import com.example.gymknight.domain.GetExerciseByCategoryUseCase
+import com.example.gymknight.domain.GetExerciseByCategoryUseCaseImpl
 import com.example.gymknight.domain.GetWorkoutUseCase
 import com.example.gymknight.domain.GetWorkoutUseCaseImpl
+import com.example.gymknight.presentation.addExercise.getExerciseCategories
 import com.example.gymknight.presentation.main.MainViewModel
 import org.koin.android.ext.koin.androidContext
 import org.koin.core.module.dsl.viewModel
@@ -44,7 +47,8 @@ val appModule = module {
     single { get<AppDatabase>().workoutDAO }
 
     // 3. Репозитории (привязываем интерфейсы к реализациям)
-    single { ExerciseRepositoryImpl(get()) } bind ExerciseRepository::class
+    single { ExerciseRepositoryImpl(get(), get()) } bind ExerciseRepository::class
+
 
     single<ExerciseAssetRepository> { ExerciseAssetRepositoryImpl(androidContext()) }
 
@@ -54,12 +58,15 @@ val appModule = module {
 
     // 4. Use Cases
     single { GetWorkoutUseCaseImpl(get()) } bind GetWorkoutUseCase::class
+
+    single { GetExerciseByCategoryUseCaseImpl(get()) } bind GetExerciseByCategoryUseCase::class
 }
 
 val viewModelModule = module {
     viewModel {
         MainViewModel(
             getWorkoutUseCase = get(),
+            getExerciseByCategoryUseCase = get(),
             exerciseCatalogDAO = get(),
             assetProvider = get()
         )

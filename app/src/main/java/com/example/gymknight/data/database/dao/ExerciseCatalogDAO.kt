@@ -16,6 +16,9 @@ interface ExerciseCatalogDAO {
     @Query("SELECT * FROM exercise_catalog ORDER BY name")
     fun getAll(): Flow<List<ExerciseCatalogEntity>>
 
+    @Query("SELECT * FROM exercise_catalog WHERE muscleGroup = :category ORDER BY name ")
+    fun getExerciseByCategory(category: String): Flow<List<ExerciseCatalogEntity>>
+
     @Insert(onConflict = OnConflictStrategy.IGNORE)
     suspend fun insertAll(items: List<ExerciseCatalogEntity>)
 }

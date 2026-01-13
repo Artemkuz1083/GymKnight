@@ -1,0 +1,21 @@
+package com.example.gymknight.domain
+
+import com.example.gymknight.data.entity.ExerciseCatalogEntity
+import com.example.gymknight.data.relation.WorkoutWithExercises
+import com.example.gymknight.data.repository.ExerciseRepository
+import com.example.gymknight.data.repository.WorkoutRepository
+import kotlinx.coroutines.flow.Flow
+import javax.inject.Inject
+
+interface GetExerciseByCategoryUseCase{
+    operator fun invoke(category: String): Flow<List<ExerciseCatalogEntity>>
+}
+
+
+class GetExerciseByCategoryUseCaseImpl @Inject constructor(
+    private val repository: ExerciseRepository
+): GetExerciseByCategoryUseCase{
+    override fun invoke(category: String): Flow<List<ExerciseCatalogEntity>> {
+        return repository.getExerciseByCategory(category)
+    }
+}
