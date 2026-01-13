@@ -72,6 +72,7 @@ class MainViewModel(
 
     fun getWorkoutByDate(start: Long, end: Long): StateFlow<WorkoutWithExercises?> {
         return getWorkoutByDateUseCase(start, end)
+    }
     fun addSet(exerciseId: Long, weight: Double, repetitions: Int) {
         viewModelScope.launch {
             addSetUseCase(exerciseId, weight, repetitions)
