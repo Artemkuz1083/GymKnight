@@ -10,22 +10,16 @@ import javax.inject.Inject
 interface ExerciseRepository  {
     suspend fun deleteExercise(exercise: ExerciseEntity): Int
 
-    fun getExerciseByCategory(category: String): Flow<List<ExerciseCatalogEntity>>
-
     suspend fun addExercise( workoutId: Long, title: String)
 }
 
 class ExerciseRepositoryImpl @Inject constructor(
     private val dao: ExerciseDAO,
-    private val catalogDao: ExerciseCatalogDAO
 ): ExerciseRepository{
     override suspend fun deleteExercise(exercise: ExerciseEntity): Int {
         return dao.deleteExercise(exercise)
     }
 
-    override fun getExerciseByCategory(category: String): Flow<List<ExerciseCatalogEntity>>{
-        return catalogDao.getExerciseByCategory(category)
-    }
 
     override suspend fun addExercise(workoutId: Long, title: String) {
         dao.insertExercise(

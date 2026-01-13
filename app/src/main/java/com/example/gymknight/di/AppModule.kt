@@ -4,6 +4,8 @@ import androidx.room.Room
 import com.example.gymknight.data.database.AppDatabase
 import com.example.gymknight.data.repository.ExerciseAssetRepository
 import com.example.gymknight.data.repository.ExerciseAssetRepositoryImpl
+import com.example.gymknight.data.repository.ExerciseCatalogRepository
+import com.example.gymknight.data.repository.ExerciseCatalogRepositoryImpl
 import com.example.gymknight.data.repository.ExerciseRepository
 import com.example.gymknight.data.repository.ExerciseRepositoryImpl
 import com.example.gymknight.data.repository.SetRepository
@@ -48,9 +50,11 @@ val appModule = module {
     single { get<AppDatabase>().workoutDAO }
 
     // 3. Репозитории (привязываем интерфейсы к реализациям)
-    single { ExerciseRepositoryImpl(get(), get()) } bind ExerciseRepository::class
+    single { ExerciseRepositoryImpl(get())} bind ExerciseRepository::class
 
     single<ExerciseAssetRepository> { ExerciseAssetRepositoryImpl(androidContext()) }
+
+    single { ExerciseCatalogRepositoryImpl(get()) } bind ExerciseCatalogRepository::class
 
     single { SetRepositoryImpl(get()) } bind SetRepository::class
 
@@ -60,6 +64,7 @@ val appModule = module {
     single { GetWorkoutUseCaseImpl(get()) } bind GetWorkoutUseCase::class
 
     single { GetExerciseByCategoryUseCaseImpl(get()) } bind GetExerciseByCategoryUseCase::class
+
 
     single { AddExerciseUseCaseImpl(get()) } bind AddExerciseUseCase::class
 
