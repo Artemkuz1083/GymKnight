@@ -4,9 +4,11 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.gymknight.data.database.dao.ExerciseCatalogDAO
 import com.example.gymknight.data.entity.ExerciseCatalogEntity
+import com.example.gymknight.data.entity.ExerciseEntity
 import com.example.gymknight.data.relation.WorkoutWithExercises
 import com.example.gymknight.data.repository.ExerciseAssetRepository
 import com.example.gymknight.domain.AddExerciseUseCase
+import com.example.gymknight.domain.AddSetUseCase
 import com.example.gymknight.domain.AddWorkoutUseCase
 import com.example.gymknight.domain.GetExerciseByCategoryUseCase
 import com.example.gymknight.domain.GetWorkoutUseCase
@@ -24,7 +26,8 @@ class MainViewModel(
     private val exerciseCatalogDAO: ExerciseCatalogDAO,
     private val assetProvider: ExerciseAssetRepository,
     private val addExerciseUseCase: AddExerciseUseCase,
-    private val addWorkoutUseCase: AddWorkoutUseCase
+    private val addWorkoutUseCase: AddWorkoutUseCase,
+    private val addSetUseCase: AddSetUseCase
     ) : ViewModel() {
 
     val todayWorkout: StateFlow<WorkoutWithExercises?> =
@@ -65,6 +68,15 @@ class MainViewModel(
             )
 
 
+    fun addSet(exerciseId: Long, weight: Double, repetitions: Int) {
+        viewModelScope.launch {
+            addSetUseCase(exerciseId, weight, repetitions)
+        }
+    }
+
+    fun deleteExercise(exercise: ExerciseEntity) {
+        
+    }
 
     fun addExercise(workoutId: Long, title: String) {
         viewModelScope.launch {
