@@ -12,6 +12,7 @@ import com.example.gymknight.domain.AddSetUseCase
 import com.example.gymknight.domain.AddWorkoutUseCase
 import com.example.gymknight.domain.DeleteExerciseUseCase
 import com.example.gymknight.domain.GetExerciseByCategoryUseCase
+import com.example.gymknight.domain.GetUniqueCategoriesUseCase
 import com.example.gymknight.domain.GetWorkoutByDateUseCase
 import com.example.gymknight.domain.GetWorkoutUseCase
 import kotlinx.coroutines.Dispatchers
@@ -31,13 +32,21 @@ class MainViewModel(
     private val addExerciseUseCase: AddExerciseUseCase,
     private val addWorkoutUseCase: AddWorkoutUseCase,
     private val addSetUseCase: AddSetUseCase,
-    private val deleteExerciseUseCase: DeleteExerciseUseCase
+    private val deleteExerciseUseCase: DeleteExerciseUseCase,
+    private val getUniqueCategoriesUseCase: GetUniqueCategoriesUseCase
     ) : ViewModel() {
 
     val todayWorkout: StateFlow<WorkoutWithExercises?> =
         getWorkoutUseCase(
             start = getTodayStart(),
             end = getTodayEnd()
+        )
+
+    val catalogCategories: StateFlow<List<String>> = getUniqueCategoriesUseCase()
+        .stateIn(
+            scope = viewModelScope,
+            started = SharingStarted.WhileSubscribed(5000),
+            initialValue = emptyList()
         )
 
 

@@ -10,6 +10,8 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -24,6 +26,8 @@ import com.example.gymknight.presentation.exerciseByCategory.ExerciseByCategoryS
 import com.example.gymknight.presentation.exerciseByCategory.ExerciseByCategoryScreenContent
 import com.example.gymknight.presentation.exerciseByCategory.ExerciseByCategoryVoyagerScreen
 import com.example.gymknight.presentation.exercises.ExercisesScreen
+import com.example.gymknight.presentation.main.MainViewModel
+import org.koin.androidx.compose.koinViewModel
 
 
 val DarkBackground = Color(0xFF121212)
@@ -35,8 +39,11 @@ val BlueCard = Color(0xFF1B1B2D)
 @Composable
 fun AddExerciseScreen(){
     val navigator = LocalNavigator.current
-
+    val viewModel: MainViewModel = koinViewModel ()
+    val dbCategories by viewModel.catalogCategories.collectAsState()
+    val uiCategories = dbCategories.map{name -> mapMuscleGroupToUi(name)}
     AddExerciseScreenContent(
+        categories = uiCategories,
         onCategoryClick = { categoryName ->
             navigator?.push(ExerciseByCategoryVoyagerScreen(categoryName))
         } ,
@@ -49,6 +56,7 @@ fun AddExerciseScreen(){
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AddExerciseScreenContent(
+    categories: List<ExerciseCategory>,
     onCategoryClick: (String) -> Unit,
     onCloseClick: () -> Unit
 ) {
@@ -81,7 +89,7 @@ fun AddExerciseScreenContent(
                 Spacer(modifier = Modifier.height(16.dp))
             }
 
-            items(getExerciseCategories()) { category ->
+            items(categories) { category ->
                 CategoryItem(
                     category = category,
                     onClick = {
@@ -109,6 +117,19 @@ fun AddExerciseScreenContent(
                 fontWeight = FontWeight.Bold
             )
         }
+    }
+}
+
+fun mapMuscleGroupToUi(name: String): ExerciseCategory {
+    return when (name) {
+        "Грудь" -> ExerciseCategory(name, Icons.Default.FitnessCenter, Color(0xFF81C784))
+        "Руки" -> ExerciseCategory(name, Icons.Default.PanTool, Color(0xFFE57373))
+        "Спина" -> ExerciseCategory(name, Icons.Default.Cloud, Color(0xFF64B5F6))
+        "Ноги" -> ExerciseCategory(name, Icons.Default.Accessibility, Color(0xFFDCE775))
+        "Плечи" -> ExerciseCategory(name, Icons.Default.Person, Color(0xFF4FC3F7))
+        "Корпус" -> ExerciseCategory(name, Icons.Default.Casino, Color(0xFFBA68C8))
+        "Другое" -> ExerciseCategory(name, Icons.Default.Build, Color(0xFF90A4AE))
+        else -> ExerciseCategory(name, Icons.Default.MoreHoriz, Color(0xFF78909C))
     }
 }
 
@@ -158,32 +179,19 @@ fun CategoryItem(category: ExerciseCategory, onClick: () -> Unit) {
         Icon(category.icon, contentDescription = null, tint = category.color, modifier = Modifier.size(28.dp))
         Spacer(modifier = Modifier.width(16.dp))
         Text(category.name, color = Color.White, fontSize = 18.sp, modifier = Modifier.weight(1f))
-        if (category.lastTrained != null) {
-            Text("${category.lastTrained} дня", color = Color.Gray, fontSize = 12.sp)
-        }
-        Icon(Icons.Default.MoreVert, contentDescription = null, tint = Color.White, modifier = Modifier.padding(start = 8.dp))
     }
 }
 
 data class ExerciseCategory(val name: String, val icon: ImageVector, val color: Color, val lastTrained: Int? = null)
 
-fun getExerciseCategories() = listOf(
-    ExerciseCategory("Грудь", Icons.Default.Face, Color(0xFF81C784), 3),
-    ExerciseCategory("Руки", Icons.Default.PanTool, Color(0xFFE57373), 3),
-    ExerciseCategory("Спина", Icons.Default.Cloud, Color(0xFF64B5F6), 7),
-    ExerciseCategory("Ноги", Icons.Default.Accessibility, Color(0xFFDCE775), 5),
-    ExerciseCategory("Плечи", Icons.Default.Person, Color(0xFF4FC3F7), 5),
-    ExerciseCategory("Корпус", Icons.Default.Casino, Color(0xFFBA68C8)),
-    ExerciseCategory("Фулбоди", Icons.Default.DirectionsRun, Color(0xFFFFB74D)),
-    ExerciseCategory("Кардио", Icons.Default.FavoriteBorder, Color(0xFFF06292)),
-    ExerciseCategory("Другое", Icons.Default.Build, Color(0xFF90A4AE))
-)
+
 
 @Preview
 @Composable
 fun AddExerciseScreenPreview() {
     MaterialTheme {
         AddExerciseScreenContent(
+            categories = emptyList(),
             onCloseClick = {},
             onCategoryClick = {}
         )

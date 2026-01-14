@@ -22,6 +22,8 @@ import com.example.gymknight.domain.DeleteExerciseUseCase
 import com.example.gymknight.domain.DeleteExerciseUseCaseImpl
 import com.example.gymknight.domain.GetExerciseByCategoryUseCase
 import com.example.gymknight.domain.GetExerciseByCategoryUseCaseImpl
+import com.example.gymknight.domain.GetUniqueCategoriesUseCase
+import com.example.gymknight.domain.GetUniqueCategoriesUseCaseImpl
 import com.example.gymknight.domain.GetWorkoutByDateUseCase
 import com.example.gymknight.domain.GetWorkoutByDateUseCaseImpl
 import com.example.gymknight.domain.GetWorkoutUseCase
@@ -29,6 +31,7 @@ import com.example.gymknight.domain.GetWorkoutUseCaseImpl
 import com.example.gymknight.presentation.main.MainViewModel
 import org.koin.android.ext.koin.androidContext
 import org.koin.core.module.dsl.viewModel
+import org.koin.core.module.dsl.viewModelOf
 import org.koin.dsl.bind
 import org.koin.dsl.binds
 import org.koin.dsl.module
@@ -80,21 +83,11 @@ val appModule = module {
 
     single { DeleteExerciseUseCaseImpl(get()) } bind DeleteExerciseUseCase::class
 
+    single { GetUniqueCategoriesUseCaseImpl(get()) } bind GetUniqueCategoriesUseCase::class
+
 
 }
 
 val viewModelModule = module {
-    viewModel {
-        MainViewModel(
-            getWorkoutUseCase = get(),
-            getExerciseByCategoryUseCase = get(),
-            exerciseCatalogDAO = get(),
-            assetProvider = get(),
-            addExerciseUseCase = get(),
-            addWorkoutUseCase = get(),
-            getWorkoutByDateUseCase = get(),
-            addSetUseCase = get(),
-            deleteExerciseUseCase = get()
-        )
-    }
+    viewModelOf(::MainViewModel)
 }
