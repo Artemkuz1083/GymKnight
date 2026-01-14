@@ -1,5 +1,6 @@
 package com.example.gymknight.presentation.main
 
+import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.gymknight.data.database.dao.ExerciseCatalogDAO
@@ -21,6 +22,10 @@ import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
+import androidx.compose.runtime.State
+import androidx.compose.runtime.snapshotFlow
+import kotlinx.coroutines.flow.flatMapLatest
+import java.util.Calendar
 
 
 class MainViewModel(
@@ -36,11 +41,28 @@ class MainViewModel(
     private val getUniqueCategoriesUseCase: GetUniqueCategoriesUseCase
     ) : ViewModel() {
 
+
+    private val _selectedDate = mutableStateOf(getTodayStart())
+    val selectedDate: State<Long> = _selectedDate
+
+    fun selectDate(dateMillis: Long) {
+        _selectedDate.value = dateMillis
+    }
+
     val todayWorkout: StateFlow<WorkoutWithExercises?> =
-        getWorkoutUseCase(
-            start = getTodayStart(),
-            end = getTodayEnd()
-        )
+        snapshotFlow { _selectedDate.value }
+            .flatMapLatest { date ->
+                getWorkoutUseCase(
+                    start = getDayStart(date),
+                    end = getDayEnd(date)
+                )
+            }
+            .stateIn(
+                scope = viewModelScope,
+                started = SharingStarted.WhileSubscribed(5_000),
+                initialValue = null
+            )
+
 
     val catalogCategories: StateFlow<List<String>> = getUniqueCategoriesUseCase()
         .stateIn(
@@ -95,31 +117,30 @@ class MainViewModel(
         }
     }
 
+    fun getTodayStart() = getDayStart(System.currentTimeMillis())
+    fun getTodayEnd() = getDayEnd(System.currentTimeMillis())
 
-    fun addTodayWorkout() {
-        viewModelScope.launch {
-            addWorkoutUseCase(getTodayStart())
-        }
-    }
-
-    fun getTodayStart(): Long {
-        val calendar = java.util.Calendar.getInstance().apply {
-            set(java.util.Calendar.HOUR_OF_DAY, 0)
-            set(java.util.Calendar.MINUTE, 0)
-            set(java.util.Calendar.SECOND, 0)
-            set(java.util.Calendar.MILLISECOND, 0)
+    private fun getDayStart(dateMillis: Long): Long {
+        val calendar = Calendar.getInstance().apply {
+            timeInMillis = dateMillis
+            set(Calendar.HOUR_OF_DAY, 0)
+            set(Calendar.MINUTE, 0)
+            set(Calendar.SECOND, 0)
+            set(Calendar.MILLISECOND, 0)
         }
         return calendar.timeInMillis
     }
 
-    fun getTodayEnd(): Long {
-        val calendar = java.util.Calendar.getInstance().apply {
-            set(java.util.Calendar.HOUR_OF_DAY, 23)
-            set(java.util.Calendar.MINUTE, 59)
-            set(java.util.Calendar.SECOND, 59)
-            set(java.util.Calendar.MILLISECOND, 999)
+    private fun getDayEnd(dateMillis: Long): Long {
+        val calendar = Calendar.getInstance().apply {
+            timeInMillis = dateMillis
+            set(Calendar.HOUR_OF_DAY, 23)
+            set(Calendar.MINUTE, 59)
+            set(Calendar.SECOND, 59)
+            set(Calendar.MILLISECOND, 999)
         }
         return calendar.timeInMillis
     }
+
 
 }

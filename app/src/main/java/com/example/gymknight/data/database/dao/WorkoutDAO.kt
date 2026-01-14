@@ -20,7 +20,7 @@ interface WorkoutDAO {
         WHERE date BETWEEN :start AND :end
         LIMIT 1
     """)
-    fun getWorkoutByDateFlow(start: Long, end: Long): Flow<WorkoutWithExercises>
+    fun getWorkoutByDateFlow(start: Long, end: Long): Flow<WorkoutWithExercises?>
 
     @Query("SELECT * FROM workout WHERE date BETWEEN :start AND :end LIMIT 1")
     suspend fun getWorkoutByDate(start: Long, end: Long): WorkoutEntity?

@@ -1,5 +1,6 @@
 package com.example.gymknight.presentation.main
 
+import android.text.format.DateUtils.isToday
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -17,6 +18,8 @@ import androidx.compose.material.icons.filled.DateRange
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.DatePicker
+import androidx.compose.material3.DatePickerDialog
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
@@ -24,7 +27,9 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.rememberDatePickerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -37,25 +42,23 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import cafe.adriel.voyager.navigator.LocalNavigator
-import cafe.adriel.voyager.navigator.bottomSheet.LocalBottomSheetNavigator
 import com.example.gymknight.data.relation.ExerciseWithSets
 import com.example.gymknight.navigation.AddExerciseNavigationScreen
-import com.example.gymknight.navigation.CreateExerciseNavigationScreen
 import org.koin.compose.viewmodel.koinViewModel
+import java.text.SimpleDateFormat
+import java.util.Calendar
+import java.util.Date
+import java.util.Locale
 
 @Composable
 fun MainScreen() {
 
     val navigator = LocalNavigator.current?.parent
-    val bsNavigator = LocalBottomSheetNavigator.current
 
     val viewModel: MainViewModel = koinViewModel()
 
     MainScreenContent(
         viewModel,
-        onGoToCreateExercisesClick = {
-            navigator?.push(CreateExerciseNavigationScreen())
-        },
         onGoToAddExerciseClick = {
             navigator?.push(AddExerciseNavigationScreen())
         }
@@ -67,20 +70,32 @@ fun MainScreen() {
 @Composable
 fun MainScreenContent(
     viewModel: MainViewModel,
-    onGoToCreateExercisesClick: () -> Unit,
     onGoToAddExerciseClick: () -> Unit
 ) {
 
     val todayWorkout by viewModel.todayWorkout.collectAsState()
+
+    var showDatePicker by remember { mutableStateOf(false) }
+
+    val selectedDate by viewModel.selectedDate
+    val title = remember(selectedDate) {
+        if (isToday(selectedDate)) {
+            "Сегодня"
+        } else {
+            formatDate(selectedDate)
+        }
+    }
+
+
 
     val context = LocalContext.current
 
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text("Тренировка") },
+                title = { Text(title)  },
                 actions = {
-                    IconButton(onClick = { TODO() }) {
+                    IconButton(onClick = { showDatePicker = true }) {
                         Icon(
                             imageVector = Icons.Default.DateRange,
                             contentDescription = "Выбрать дату"
@@ -119,6 +134,34 @@ fun MainScreenContent(
             }
         }
     }
+
+    if (showDatePicker) {
+        val datePickerState = rememberDatePickerState(
+            initialSelectedDateMillis = viewModel.selectedDate.value
+        )
+
+        DatePickerDialog(
+            onDismissRequest = { showDatePicker = false },
+            confirmButton = {
+                TextButton(onClick = {
+                    datePickerState.selectedDateMillis?.let {
+                        viewModel.selectDate(it)
+                    }
+                    showDatePicker = false
+                }) {
+                    Text("ОК")
+                }
+            },
+            dismissButton = {
+                TextButton(onClick = { showDatePicker = false }) {
+                    Text("Отмена")
+                }
+            }
+        ) {
+            DatePicker(state = datePickerState)
+        }
+    }
+
 }
 
 @Composable
@@ -260,5 +303,19 @@ fun AddSetDialog(
         }
     )
 }
+
+fun isToday(dateMillis: Long): Boolean {
+    val today = Calendar.getInstance()
+    val date = Calendar.getInstance().apply { timeInMillis = dateMillis }
+
+    return today.get(Calendar.YEAR) == date.get(Calendar.YEAR) &&
+            today.get(Calendar.DAY_OF_YEAR) == date.get(Calendar.DAY_OF_YEAR)
+}
+
+fun formatDate(dateMillis: Long): String {
+    val formatter = SimpleDateFormat("dd MMMM yyyy", Locale("ru"))
+    return formatter.format(Date(dateMillis))
+}
+
 
 
