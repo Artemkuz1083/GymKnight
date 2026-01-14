@@ -12,6 +12,9 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -60,13 +63,36 @@ fun AddExerciseScreenContent(
     onCategoryClick: (String) -> Unit,
     onCloseClick: () -> Unit
 ) {
+    var showMenu by remember{ mutableStateOf(false) }
+    var showAddCategoryDialog by remember { mutableStateOf(false)}
+    var newCategoryName by remember {mutableStateOf("")}
     Scaffold(
         topBar = {
             TopAppBar(
                 title = { Text("Упражнения", color = Color.White) },
                 actions = {
-                    IconButton(onClick = { /* TODO */ }) {
-                        Icon(Icons.Default.Add, contentDescription = null, tint = Color.White)
+                    Box {
+                        IconButton(onClick = { showMenu = true }) {
+                            Icon(Icons.Default.Add, contentDescription = null, tint = Color.White)
+                        }
+
+                        DropdownMenu(
+                            expanded = showMenu,
+                            onDismissRequest = { showMenu = false },
+                            modifier = Modifier.background(CardBackground)
+                        ) {
+                            DropdownMenuItem(
+                                text = { Text("Новое упражнение", color = Color.White) },
+                                onClick = { showMenu = false /* Пока не реализуем */ }
+                            )
+                            DropdownMenuItem(
+                                text = { Text("Новая категория", color = Color.White) },
+                                onClick = {
+                                    showMenu = false
+                                    showAddCategoryDialog = true
+                                }
+                            )
+                        }
                     }
                     IconButton(onClick = { /* TODO */ }) {
                         Icon(Icons.Default.Search, contentDescription = null, tint = Color.White)
@@ -101,6 +127,42 @@ fun AddExerciseScreenContent(
             item {
                 Spacer(modifier = Modifier.height(80.dp))
             }
+        }
+
+        if (showAddCategoryDialog) {
+            AlertDialog(
+                onDismissRequest = { showAddCategoryDialog = false },
+                containerColor = CardBackground,
+                title = { Text("Новая категория", color = Color.White) },
+                text = {
+                    OutlinedTextField(
+                        value = newCategoryName,
+                        onValueChange = { newCategoryName = it },
+                        label = { Text("Название") },
+                        singleLine = true,
+                        colors = TextFieldDefaults.colors(
+                            focusedTextColor = Color.White,
+                            unfocusedTextColor = Color.White
+                        )
+                    )
+                },
+                confirmButton = {
+                    TextButton(onClick = {
+                        if (newCategoryName.isNotBlank()) {
+                            // Здесь будет вызов ViewModel для сохранения в БД
+                            showAddCategoryDialog = false
+                            newCategoryName = ""
+                        }
+                    }) {
+                        Text("Добавить", color = Color.Green)
+                    }
+                },
+                dismissButton = {
+                    TextButton(onClick = { showAddCategoryDialog = false }) {
+                        Text("Отмена", color = Color.Red)
+                    }
+                }
+            )
         }
 
         Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.BottomEnd) {
@@ -189,9 +251,15 @@ data class ExerciseCategory(val name: String, val icon: ImageVector, val color: 
 @Preview
 @Composable
 fun AddExerciseScreenPreview() {
+    val previewCategories = listOf(
+        ExerciseCategory("Грудь", Icons.Default.FitnessCenter, Color(0xFF81C784)),
+        ExerciseCategory("Спина", Icons.Default.Cloud, Color(0xFF64B5F6)),
+        ExerciseCategory("Ноги", Icons.Default.Accessibility, Color(0xFFDCE775)),
+        ExerciseCategory("Руки", Icons.Default.PanTool, Color(0xFFE57373))
+    )
     MaterialTheme {
         AddExerciseScreenContent(
-            categories = emptyList(),
+            categories = previewCategories,
             onCloseClick = {},
             onCategoryClick = {}
         )
