@@ -24,7 +24,6 @@ class WorkoutRepositoryImpl(
 
     private val repositoryScope = CoroutineScope(Dispatchers.IO + SupervisorJob())
 
-    // Метод findOrCreate
     override suspend fun addWorkout(workout: WorkoutEntity): WorkoutEntity {
         val startOfDay = getStartOfDay(workout.date)
         val endOfDay = getEndOfDay(workout.date)
@@ -38,7 +37,6 @@ class WorkoutRepositoryImpl(
         }
     }
 
-    // Возвращает StateFlow для UI
     override fun getWorkoutByDateStateFlow(start: Long, end: Long): StateFlow<WorkoutWithExercises?> {
         return dao.getWorkoutByDateFlow(start, end)
             .stateIn(
@@ -48,7 +46,6 @@ class WorkoutRepositoryImpl(
             )
     }
 
-    // Вспомогательные функции для начала/конца дня
     private fun getStartOfDay(timestamp: Long): Long {
         val calendar = Calendar.getInstance().apply {
             timeInMillis = timestamp

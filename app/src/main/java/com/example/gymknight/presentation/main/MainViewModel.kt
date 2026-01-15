@@ -77,7 +77,6 @@ class MainViewModel(
 
 
     init {
-        // Загрузка данных из JSON в БД при первом запуске
         viewModelScope.launch(Dispatchers.IO) {
             val count = exerciseCatalogDAO.count()
             if (count == 0) {

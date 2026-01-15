@@ -48,7 +48,6 @@ import org.koin.androidx.compose.koinViewModel
 private val DarkBg = Color(0xFF121212)
 private val CardBg = Color(0xFF1E1E1E)
 
-// Это обертка для Voyager, которую мы будем пушить
 data class ExerciseByCategoryVoyagerScreen(val categoryName: String) : Screen {
     @Composable
     override fun Content() {
@@ -123,13 +122,12 @@ fun ExerciseItem(
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .clip(RoundedCornerShape(12.dp)) // Чтобы эффект нажатия был скругленным
+            .clip(RoundedCornerShape(12.dp))
             .background(CardBg)
-            .clickable { onClick() } // Обработка нажатия
+            .clickable { onClick() }
             .padding(12.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
-        // Заглушка под картинку
         Box(
             modifier = Modifier
                 .size(44.dp)

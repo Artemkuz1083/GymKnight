@@ -142,7 +142,6 @@ fun AddExerciseScreenContent(
                     Column(verticalArrangement = Arrangement.spacedBy(10.dp)) {
                         Text("Чтобы создать категорию, добавьте в нее первое упражнение:", color = Color.Gray, fontSize = 14.sp)
 
-                        // Поле 1: Название категории
                         OutlinedTextField(
                             value = newCategoryName,
                             onValueChange = { newCategoryName = it },
@@ -155,7 +154,6 @@ fun AddExerciseScreenContent(
                             )
                         )
 
-                        // Поле 2: Название упражнения
                         OutlinedTextField(
                             value = newExerciseName,
                             onValueChange = { newExerciseName = it },
@@ -174,7 +172,6 @@ fun AddExerciseScreenContent(
                         if (newCategoryName.isNotBlank() && newExerciseName.isNotBlank()) {
                             onAddCategory(newCategoryName, newExerciseName)
                             showAddCategoryDialog = false
-                            // Сбрасываем поля
                             newCategoryName = ""
                             newExerciseName = ""
                         }

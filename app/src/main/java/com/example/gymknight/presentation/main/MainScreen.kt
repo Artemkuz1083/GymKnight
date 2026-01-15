@@ -179,7 +179,6 @@ fun ExerciseCard(
     ) {
         Column(modifier = Modifier.padding(16.dp)) {
 
-            // Заголовок упражнения + кнопки
             Row(verticalAlignment = Alignment.CenterVertically) {
                 Text(
                     text = exercise.exercise.title,
@@ -207,7 +206,6 @@ fun ExerciseCard(
 
             Spacer(modifier = Modifier.height(8.dp))
 
-            // Список подходов
             if (exercise.sets.isNotEmpty()) {
                 LazyRow(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
                     items(exercise.sets.sortedBy { it.order }) { set ->
@@ -224,7 +222,6 @@ fun ExerciseCard(
         }
     }
 
-    // Диалог добавления подхода
     if (showAddSetDialog) {
         AddSetDialog(
             onDismiss = { showAddSetDialog = false },
@@ -234,7 +231,6 @@ fun ExerciseCard(
         )
     }
 
-    // Диалог подтверждения удаления упражнения
     if (showDeleteDialog) {
         androidx.compose.material3.AlertDialog(
             onDismissRequest = { showDeleteDialog = false },

@@ -42,26 +42,22 @@ import org.koin.dsl.module
 
 val appModule = module {
 
-    // 1. Создаем синглтон базы данных Room
     single {
         Room.databaseBuilder(
             androidContext(),
             AppDatabase::class.java,
             "gym_database"
         )
-            // Позволяет Room пересоздавать таблицы, если ты изменил Entity,
-            // но не хочешь возиться с миграциями на этапе разработки
             .fallbackToDestructiveMigration()
             .build()
     }
 
-    // 2. Предоставляем DAO напрямую из экземпляра базы данных
     single { get<AppDatabase>().exerciseDAO }
     single { get<AppDatabase>().setDAO }
     single { get<AppDatabase>().exerciseCatalogDAO }
     single { get<AppDatabase>().workoutDAO }
 
-    // 3. Репозитории (привязываем интерфейсы к реализациям)
+    // Репозитории
     single { ExerciseRepositoryImpl(get()) } bind ExerciseRepository::class
 
     single<ExerciseAssetRepository> { ExerciseAssetRepositoryImpl(androidContext()) }
@@ -72,7 +68,7 @@ val appModule = module {
 
     single { WorkoutRepositoryImpl(get()) } bind WorkoutRepository::class
 
-    // 4. Use Cases
+    // Use Cases
     single { GetWorkoutUseCaseImpl(get()) } bind GetWorkoutUseCase::class
 
     single { GetExerciseByCategoryUseCaseImpl(get()) } bind GetExerciseByCategoryUseCase::class
