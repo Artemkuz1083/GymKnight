@@ -8,6 +8,7 @@ import com.example.gymknight.data.entity.ExerciseCatalogEntity
 import com.example.gymknight.data.entity.ExerciseEntity
 import com.example.gymknight.data.relation.WorkoutWithExercises
 import com.example.gymknight.data.repository.ExerciseAssetRepository
+import com.example.gymknight.domain.AddCategoryUseCase
 import com.example.gymknight.domain.AddExerciseUseCase
 import com.example.gymknight.domain.AddSetUseCase
 import com.example.gymknight.domain.AddWorkoutUseCase
@@ -38,7 +39,8 @@ class MainViewModel(
     private val addWorkoutUseCase: AddWorkoutUseCase,
     private val addSetUseCase: AddSetUseCase,
     private val deleteExerciseUseCase: DeleteExerciseUseCase,
-    private val getUniqueCategoriesUseCase: GetUniqueCategoriesUseCase
+    private val getUniqueCategoriesUseCase: GetUniqueCategoriesUseCase,
+    private val addCategoryUseCase: AddCategoryUseCase
     ) : ViewModel() {
 
 
@@ -77,6 +79,9 @@ class MainViewModel(
         viewModelScope.launch(Dispatchers.IO) {
             val count = exerciseCatalogDAO.count()
             if (count == 0) {
+
+                exerciseCatalogDAO.setAutoIncrementStart()
+
                 val list = assetProvider.getExercisesFromJson()
                 exerciseCatalogDAO.insertAll(list)
             }
@@ -142,5 +147,10 @@ class MainViewModel(
         return calendar.timeInMillis
     }
 
+    fun addCategoryWithExercise(categoryName: String, exerciseName: String){
+        viewModelScope.launch {
+            addCategoryUseCase(categoryName,exerciseName)
+        }
+    }
 
 }

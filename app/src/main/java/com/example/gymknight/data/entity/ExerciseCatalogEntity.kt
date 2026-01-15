@@ -7,8 +7,8 @@ import kotlinx.serialization.Serializable
 @Serializable
 @Entity(tableName = "exercise_catalog")
 data class ExerciseCatalogEntity(
-    @PrimaryKey
-    val id: Int,
+    @PrimaryKey(autoGenerate = true)
+    val id: Long = 0,
     val name: String,
     val muscleGroup: String
 )

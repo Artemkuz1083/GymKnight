@@ -22,6 +22,12 @@ interface ExerciseCatalogDAO {
     @Query("SELECT DISTINCT muscleGroup FROM exercise_catalog")
     fun getUniqueCategories(): Flow<List<String>>
 
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insertExercise(exercise: ExerciseCatalogEntity)
+
+    @Query("UPDATE sqlite_sequence SET seq = 10000 WHERE name = 'exercise_catalog'")
+    suspend fun setAutoIncrementStart()
+
     @Insert(onConflict = OnConflictStrategy.IGNORE)
     suspend fun insertAll(items: List<ExerciseCatalogEntity>)
 }

@@ -50,6 +50,8 @@ fun AddExerciseScreen(){
         onCategoryClick = { categoryName ->
             navigator?.push(ExerciseByCategoryVoyagerScreen(categoryName))
         } ,
+        onAddCategory = {category , exercise ->
+            viewModel.addCategoryWithExercise(category, exercise)},
         onCloseClick = {
             navigator?.pop()
         }
@@ -61,11 +63,13 @@ fun AddExerciseScreen(){
 fun AddExerciseScreenContent(
     categories: List<ExerciseCategory>,
     onCategoryClick: (String) -> Unit,
+    onAddCategory: (String,String) -> Unit,
     onCloseClick: () -> Unit
 ) {
     var showMenu by remember{ mutableStateOf(false) }
     var showAddCategoryDialog by remember { mutableStateOf(false)}
-    var newCategoryName by remember {mutableStateOf("")}
+    var newCategoryName by remember { mutableStateOf("") }
+    var newExerciseName by remember { mutableStateOf("") }
     Scaffold(
         topBar = {
             TopAppBar(
@@ -82,15 +86,15 @@ fun AddExerciseScreenContent(
                             modifier = Modifier.background(CardBackground)
                         ) {
                             DropdownMenuItem(
-                                text = { Text("Новое упражнение", color = Color.White) },
-                                onClick = { showMenu = false /* Пока не реализуем */ }
-                            )
-                            DropdownMenuItem(
                                 text = { Text("Новая категория", color = Color.White) },
                                 onClick = {
                                     showMenu = false
                                     showAddCategoryDialog = true
                                 }
+                            )
+                            DropdownMenuItem(
+                                text = { Text("Новое упражнение", color = Color.White) },
+                                onClick = { showMenu = false /* Пока не реализуем */ }
                             )
                         }
                     }
@@ -133,25 +137,46 @@ fun AddExerciseScreenContent(
             AlertDialog(
                 onDismissRequest = { showAddCategoryDialog = false },
                 containerColor = CardBackground,
-                title = { Text("Новая категория", color = Color.White) },
+                title = { Text("Создать категорию", color = Color.White) },
                 text = {
-                    OutlinedTextField(
-                        value = newCategoryName,
-                        onValueChange = { newCategoryName = it },
-                        label = { Text("Название") },
-                        singleLine = true,
-                        colors = TextFieldDefaults.colors(
-                            focusedTextColor = Color.White,
-                            unfocusedTextColor = Color.White
+                    Column(verticalArrangement = Arrangement.spacedBy(10.dp)) {
+                        Text("Чтобы создать категорию, добавьте в нее первое упражнение:", color = Color.Gray, fontSize = 14.sp)
+
+                        // Поле 1: Название категории
+                        OutlinedTextField(
+                            value = newCategoryName,
+                            onValueChange = { newCategoryName = it },
+                            label = { Text("Название категории") },
+                            placeholder = { Text("Напр. Растяжка") },
+                            singleLine = true,
+                            colors = TextFieldDefaults.colors(
+                                focusedTextColor = Color.White,
+                                unfocusedTextColor = Color.White
+                            )
                         )
-                    )
+
+                        // Поле 2: Название упражнения
+                        OutlinedTextField(
+                            value = newExerciseName,
+                            onValueChange = { newExerciseName = it },
+                            label = { Text("Первое упражнение") },
+                            placeholder = { Text("Напр. Шпагат") },
+                            singleLine = true,
+                            colors = TextFieldDefaults.colors(
+                                focusedTextColor = Color.White,
+                                unfocusedTextColor = Color.White
+                            )
+                        )
+                    }
                 },
                 confirmButton = {
                     TextButton(onClick = {
-                        if (newCategoryName.isNotBlank()) {
-                            // Здесь будет вызов ViewModel для сохранения в БД
+                        if (newCategoryName.isNotBlank() && newExerciseName.isNotBlank()) {
+                            onAddCategory(newCategoryName, newExerciseName)
                             showAddCategoryDialog = false
+                            // Сбрасываем поля
                             newCategoryName = ""
+                            newExerciseName = ""
                         }
                     }) {
                         Text("Добавить", color = Color.Green)
@@ -261,6 +286,7 @@ fun AddExerciseScreenPreview() {
         AddExerciseScreenContent(
             categories = previewCategories,
             onCloseClick = {},
+            onAddCategory = {_,_ ->},
             onCategoryClick = {}
         )
     }
