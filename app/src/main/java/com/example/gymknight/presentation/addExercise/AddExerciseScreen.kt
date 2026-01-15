@@ -2,6 +2,7 @@ package com.example.gymknight.presentation.addExercise
 
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.LocalActivity
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
@@ -22,7 +23,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -38,9 +41,6 @@ import org.koin.androidx.compose.koinViewModel
 
 val DarkBackground = Color(0xFF121212)
 val CardBackground = Color(0xFF1E1E1E)
-val PurpleCard = Color(0xFF2D1B33)
-val GreenCard = Color(0xFF1B2D1B)
-val BlueCard = Color(0xFF1B1B2D)
 
 @Composable
 fun AddExerciseScreen(){
@@ -200,14 +200,16 @@ fun AddExerciseScreenContent(
 
 fun mapMuscleGroupToUi(name: String): ExerciseCategory {
     return when (name) {
-        "Грудь" -> ExerciseCategory(name, Icons.Default.FitnessCenter, Color(0xFF81C784))
-        "Руки" -> ExerciseCategory(name, Icons.Default.PanTool, Color(0xFFE57373))
-        "Спина" -> ExerciseCategory(name, Icons.Default.Cloud, Color(0xFF64B5F6))
-        "Ноги" -> ExerciseCategory(name, Icons.Default.Accessibility, Color(0xFFDCE775))
-        "Плечи" -> ExerciseCategory(name, Icons.Default.Person, Color(0xFF4FC3F7))
-        "Корпус" -> ExerciseCategory(name, Icons.Default.Casino, Color(0xFFBA68C8))
-        "Другое" -> ExerciseCategory(name, Icons.Default.Build, Color(0xFF90A4AE))
-        else -> ExerciseCategory(name, Icons.Default.MoreHoriz, Color(0xFF78909C))
+        "Грудь" -> ExerciseCategory(name, com.example.gymknight.R.drawable.chest)
+        "Руки" -> ExerciseCategory(name, com.example.gymknight.R.drawable.arm)
+        "Спина" -> ExerciseCategory(name, com.example.gymknight.R.drawable.back)
+        "Ноги" -> ExerciseCategory(name, com.example.gymknight.R.drawable.leg)
+        "Плечи" -> ExerciseCategory(name, com.example.gymknight.R.drawable.shoulder)
+        "Корпус" -> ExerciseCategory(name, com.example.gymknight.R.drawable.tors)
+        "Фулбоди" -> ExerciseCategory(name, com.example.gymknight.R.drawable.knghite)
+        "Кардио" -> ExerciseCategory(name, com.example.gymknight.R.drawable.heart)
+        "Другое" -> ExerciseCategory(name, com.example.gymknight.R.drawable.knighte1)
+        else -> ExerciseCategory(name, com.example.gymknight.R.drawable.knighte1)
     }
 }
 
@@ -219,16 +221,35 @@ fun CategoryItem(category: ExerciseCategory, onClick: () -> Unit) {
             .clip(RoundedCornerShape(12.dp))
             .background(CardBackground)
             .clickable { onClick() }
-            .padding(16.dp),
+            .padding(12.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
-        Icon(category.icon, contentDescription = null, tint = category.color, modifier = Modifier.size(28.dp))
+        Image(
+            painter = painterResource(id = category.icon),
+            contentDescription = null,
+            modifier = Modifier
+                .size(48.dp)
+                .clip(RoundedCornerShape(8.dp)),
+            contentScale = ContentScale.Crop
+        )
         Spacer(modifier = Modifier.width(16.dp))
-        Text(category.name, color = Color.White, fontSize = 18.sp, modifier = Modifier.weight(1f))
+        Text(
+            text = category.name,
+            color = Color.White,
+            fontSize = 18.sp,
+            fontWeight = FontWeight.Medium,
+            modifier = Modifier.weight(1f)
+        )
+        Icon(
+            imageVector = Icons.Default.ChevronRight,
+            contentDescription = null,
+            tint = Color.Gray,
+            modifier = Modifier.size(20.dp)
+        )
     }
 }
 
-data class ExerciseCategory(val name: String, val icon: ImageVector, val color: Color, val lastTrained: Int? = null)
+data class ExerciseCategory(val name: String, val icon: Int, val lastTrained: Int? = null)
 
 
 
@@ -236,10 +257,10 @@ data class ExerciseCategory(val name: String, val icon: ImageVector, val color: 
 @Composable
 fun AddExerciseScreenPreview() {
     val previewCategories = listOf(
-        ExerciseCategory("Грудь", Icons.Default.FitnessCenter, Color(0xFF81C784)),
-        ExerciseCategory("Спина", Icons.Default.Cloud, Color(0xFF64B5F6)),
-        ExerciseCategory("Ноги", Icons.Default.Accessibility, Color(0xFFDCE775)),
-        ExerciseCategory("Руки", Icons.Default.PanTool, Color(0xFFE57373))
+        ExerciseCategory("Грудь", com.example.gymknight.R.drawable.chest),
+        ExerciseCategory("Спина", com.example.gymknight.R.drawable.back),
+        ExerciseCategory("Ноги", com.example.gymknight.R.drawable.leg),
+        ExerciseCategory("Руки", com.example.gymknight.R.drawable.arm)
     )
     MaterialTheme {
         AddExerciseScreenContent(

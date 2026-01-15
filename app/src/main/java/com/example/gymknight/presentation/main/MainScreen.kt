@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.wrapContentSize
@@ -31,6 +32,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.rememberDatePickerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
@@ -43,6 +45,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import cafe.adriel.voyager.navigator.LocalNavigator
 import com.example.gymknight.data.relation.ExerciseWithSets
 import com.example.gymknight.navigation.AddExerciseNavigationScreen
@@ -52,6 +55,10 @@ import java.util.Calendar
 import java.util.Date
 import java.util.Locale
 
+
+val DarkBackground = Color(0xFF121212)
+val CardBackground = Color(0xFF1E1E1E)
+val AccentGreen = Color(0xFF4CAF50)
 @Composable
 fun MainScreen() {
 
@@ -91,34 +98,32 @@ fun MainScreenContent(
         }
     }
 
-
-
     val context = LocalContext.current
 
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text(title)  },
+                title = { Text(title, color = Color.White) },
                 actions = {
                     IconButton(onClick = { showDatePicker = true }) {
                         Icon(
                             imageVector = Icons.Default.DateRange,
-                            contentDescription = "Выбрать дату"
+                            contentDescription = null,
+                            tint = Color.White
                         )
                     }
-                }
+                },
+                colors = TopAppBarDefaults.topAppBarColors(containerColor = DarkBackground)
             )
         },
+        containerColor = DarkBackground,
         floatingActionButton = {
             FloatingActionButton(
                 onClick = onGoToAddExerciseClick,
-                containerColor = Color(0xFF4CAF50),
+                containerColor = AccentGreen,
                 contentColor = Color.Black,
             ) {
-                Icon(
-                    Icons.Default.Add,
-                    contentDescription = "Добавить"
-                )
+                Icon(Icons.Default.Add, contentDescription = null)
             }
         }
     ) { innerPaddings ->
@@ -127,40 +132,28 @@ fun MainScreenContent(
         LazyColumn(
             modifier = Modifier
                 .padding(innerPaddings)
-                .padding(8.dp)
+                .padding(horizontal = 16.dp)
                 .fillMaxSize(),
             verticalArrangement = Arrangement.spacedBy(8.dp)
         ) {
             items(exercises) { exerciseWithSets ->
-                ExerciseCard(
-                    exercise = exerciseWithSets,
-                    viewModel
-                )
+                ExerciseCard(exerciseWithSets, viewModel)
             }
         }
     }
 
     if (showDatePicker) {
-        val datePickerState = rememberDatePickerState(
-            initialSelectedDateMillis = viewModel.selectedDate.value
-        )
-
+        val datePickerState = rememberDatePickerState(initialSelectedDateMillis = selectedDate)
         DatePickerDialog(
             onDismissRequest = { showDatePicker = false },
             confirmButton = {
                 TextButton(onClick = {
-                    datePickerState.selectedDateMillis?.let {
-                        viewModel.selectDate(it)
-                    }
+                    datePickerState.selectedDateMillis?.let { viewModel.selectDate(it) }
                     showDatePicker = false
-                }) {
-                    Text("ОК")
-                }
+                }) { Text("ОК", color = AccentGreen) }
             },
             dismissButton = {
-                TextButton(onClick = { showDatePicker = false }) {
-                    Text("Отмена")
-                }
+                TextButton(onClick = { showDatePicker = false }) { Text("Отмена", color = Color.White) }
             }
         ) {
             DatePicker(state = datePickerState)
@@ -170,56 +163,32 @@ fun MainScreenContent(
 }
 
 @Composable
-fun ExerciseCard(
-    exercise: ExerciseWithSets,
-    viewModel: MainViewModel
-) {
+fun ExerciseCard(exercise: ExerciseWithSets, viewModel: MainViewModel) {
     var showAddSetDialog by remember { mutableStateOf(false) }
     var showDeleteDialog by remember { mutableStateOf(false) }
 
     Card(
-        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.tertiary),
-        elevation = CardDefaults.cardElevation(defaultElevation = 6.dp),
-        modifier = Modifier.wrapContentSize()
+        colors = CardDefaults.cardColors(containerColor = CardBackground), // Цвет карточки
+        modifier = Modifier.fillMaxWidth()
     ) {
         Column(modifier = Modifier.padding(16.dp)) {
-
             Row(verticalAlignment = Alignment.CenterVertically) {
-                Text(
-                    text = exercise.exercise.title,
-                    style = MaterialTheme.typography.titleMedium
-                )
-
+                Text(text = exercise.exercise.title, color = Color.White, style = MaterialTheme.typography.titleMedium)
                 Spacer(modifier = Modifier.weight(1f))
-
                 IconButton(onClick = { showAddSetDialog = true }) {
-                    Icon(
-                        imageVector = Icons.Default.Add,
-                        contentDescription = "Добавить подход",
-                        tint = Color.White
-                    )
+                    Icon(Icons.Default.Add, contentDescription = null, tint = Color.White)
                 }
-
                 IconButton(onClick = { showDeleteDialog = true }) {
-                    Icon(
-                        imageVector = Icons.Default.Delete,
-                        contentDescription = "Удалить упражнение",
-                        tint = Color.White
-                    )
+                    Icon(Icons.Default.Delete, contentDescription = null, tint = Color.Gray)
                 }
             }
-
-            Spacer(modifier = Modifier.height(8.dp))
 
             if (exercise.sets.isNotEmpty()) {
                 LazyRow(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
                     items(exercise.sets.sortedBy { it.order }) { set ->
-                        Column(
-                            horizontalAlignment = Alignment.CenterHorizontally,
-                            modifier = Modifier.padding(4.dp)
-                        ) {
-                            Text(text = "${set.weight}кг")
-                            Text(text = "${set.repetitions}пвт")
+                        Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                            Text(text = "${set.weight}кг", color = Color.White)
+                            Text(text = "${set.repetitions}пвт", color = Color.Gray, fontSize = 12.sp)
                         }
                     }
                 }

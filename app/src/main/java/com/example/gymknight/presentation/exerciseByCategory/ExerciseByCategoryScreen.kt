@@ -136,23 +136,11 @@ fun ExerciseItem(
             .padding(12.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
-        Box(
-            modifier = Modifier
-                .size(44.dp)
-                .background(Color(0xFF2C2C2C), RoundedCornerShape(8.dp)),
-            contentAlignment = Alignment.Center
-        ) {
-            Text("💪", fontSize = 20.sp)
-        }
-
         Spacer(modifier = Modifier.width(16.dp))
 
         Column(modifier = Modifier.weight(1f)) {
             Text(exercise.name, color = Color.White, fontSize = 16.sp, fontWeight = FontWeight.Bold)
-            Text(exercise.muscleGroup, color = Color.Gray, fontSize = 12.sp)
         }
-
-        Icon(Icons.Default.MoreVert, contentDescription = null, tint = Color.White)
     }
 }
 
