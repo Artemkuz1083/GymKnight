@@ -44,6 +44,10 @@ import cafe.adriel.voyager.navigator.LocalNavigator
 import com.example.gymknight.data.entity.ExerciseCatalogEntity
 import com.example.gymknight.presentation.main.MainViewModel
 import org.koin.androidx.compose.koinViewModel
+import androidx.activity.ComponentActivity
+import androidx.activity.compose.LocalActivity
+import androidx.compose.ui.platform.LocalContext
+
 
 private val DarkBg = Color(0xFF121212)
 private val CardBg = Color(0xFF1E1E1E)
@@ -58,7 +62,11 @@ data class ExerciseByCategoryVoyagerScreen(val categoryName: String) : Screen {
 @Composable
 fun ExerciseByCategoryScreen(categoryName: String) {
     val navigator = LocalNavigator.current
-    val viewModel: MainViewModel = koinViewModel()
+
+    val activity = LocalActivity.current as? ComponentActivity
+        ?: throw IllegalStateException("Activity not found")
+
+    val viewModel: MainViewModel = koinViewModel(viewModelStoreOwner = activity)
 
     val exercises by viewModel.getExerciseByCategory(categoryName)
         .collectAsState(initial = emptyList())

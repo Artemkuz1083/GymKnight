@@ -1,6 +1,8 @@
 package com.example.gymknight.presentation.main
 
 import android.text.format.DateUtils.isToday
+import androidx.activity.ComponentActivity
+import androidx.activity.compose.LocalActivity
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -55,8 +57,11 @@ fun MainScreen() {
 
     val navigator = LocalNavigator.current?.parent
 
-    val viewModel: MainViewModel = koinViewModel()
+    val activity = LocalActivity.current as? ComponentActivity
+        ?: throw IllegalStateException("Activity not found")
 
+    val viewModel: MainViewModel =
+        org.koin.androidx.compose.koinViewModel(viewModelStoreOwner = activity)
     MainScreenContent(
         viewModel,
         onGoToAddExerciseClick = {

@@ -50,7 +50,7 @@ class MainViewModel(
     val selectedDate: State<Long> = _selectedDate
 
     fun selectDate(dateMillis: Long) {
-        _selectedDate.value = dateMillis
+        _selectedDate.value = getDayStart(dateMillis)
     }
 
     val todayWorkout: StateFlow<WorkoutWithExercises?> =
