@@ -14,6 +14,8 @@ import com.example.gymknight.data.repository.WorkoutRepository
 import com.example.gymknight.data.repository.WorkoutRepositoryImpl
 import com.example.gymknight.domain.AddCategoryUseCase
 import com.example.gymknight.domain.AddCategoryUseCaseImpl
+import com.example.gymknight.domain.AddExerciseToWorkoutUseCase
+import com.example.gymknight.domain.AddExerciseToWorkoutUseCaseImpl
 import com.example.gymknight.domain.AddExerciseUseCase
 import com.example.gymknight.domain.AddExerciseUseCaseImpl
 import com.example.gymknight.domain.AddSetUseCase
@@ -89,6 +91,7 @@ val appModule = module {
 
     single { AddCategoryUseCaseImpl(get()) } bind AddCategoryUseCase::class
 
+    single<AddExerciseToWorkoutUseCase> { AddExerciseToWorkoutUseCaseImpl(get(), get()) }
 
 }
 

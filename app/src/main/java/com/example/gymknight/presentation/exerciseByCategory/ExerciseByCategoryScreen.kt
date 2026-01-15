@@ -64,17 +64,13 @@ fun ExerciseByCategoryScreen(categoryName: String) {
     val exercises by viewModel.getExerciseByCategory(categoryName)
         .collectAsState(initial = emptyList())
 
-    val todayWorkout by viewModel.todayWorkout.collectAsState()
-
     ExerciseByCategoryScreenContent(
         categoryName = categoryName,
         exercises = exercises,
         onBackClick = { navigator?.pop()},
         onExerciseClick = { exerciseName ->
-            todayWorkout?.workout?.id?.let { workoutId ->
-                viewModel.addExercise(workoutId, exerciseName)
-                navigator?.popUntilRoot()
-            }
+            viewModel.onExerciseSelected(exerciseName)
+            navigator?.popUntilRoot()
         }
     )
 }

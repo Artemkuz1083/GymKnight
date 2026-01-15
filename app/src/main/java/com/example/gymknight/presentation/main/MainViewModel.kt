@@ -25,6 +25,7 @@ import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import androidx.compose.runtime.State
 import androidx.compose.runtime.snapshotFlow
+import com.example.gymknight.domain.AddExerciseToWorkoutUseCase
 import kotlinx.coroutines.flow.flatMapLatest
 import java.util.Calendar
 
@@ -40,7 +41,8 @@ class MainViewModel(
     private val addSetUseCase: AddSetUseCase,
     private val deleteExerciseUseCase: DeleteExerciseUseCase,
     private val getUniqueCategoriesUseCase: GetUniqueCategoriesUseCase,
-    private val addCategoryUseCase: AddCategoryUseCase
+    private val addCategoryUseCase: AddCategoryUseCase,
+    private val addExerciseToWorkoutUseCase: AddExerciseToWorkoutUseCase
     ) : ViewModel() {
 
 
@@ -80,10 +82,10 @@ class MainViewModel(
             val count = exerciseCatalogDAO.count()
             if (count == 0) {
 
-                exerciseCatalogDAO.setAutoIncrementStart()
-
                 val list = assetProvider.getExercisesFromJson()
                 exerciseCatalogDAO.insertAll(list)
+
+                exerciseCatalogDAO.setAutoIncrementStart()
             }
         }
     }
@@ -150,6 +152,14 @@ class MainViewModel(
     fun addCategoryWithExercise(categoryName: String, exerciseName: String){
         viewModelScope.launch {
             addCategoryUseCase(categoryName,exerciseName)
+        }
+    }
+
+    fun onExerciseSelected(exerciseName: String){
+        viewModelScope.launch(Dispatchers.IO) {
+            val date = selectedDate.value
+
+            addExerciseToWorkoutUseCase(date, exerciseName)
         }
     }
 

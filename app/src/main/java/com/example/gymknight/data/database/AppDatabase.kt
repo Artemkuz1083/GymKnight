@@ -19,7 +19,7 @@ import com.example.gymknight.data.entity.WorkoutEntity
         WorkoutEntity::class,
         ExerciseCatalogEntity::class
     ],
-    version = 1
+    version = 2
 )
 
 abstract class AppDatabase : RoomDatabase(){

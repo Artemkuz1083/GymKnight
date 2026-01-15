@@ -28,6 +28,10 @@ interface ExerciseCatalogDAO {
     @Query("UPDATE sqlite_sequence SET seq = 10000 WHERE name = 'exercise_catalog'")
     suspend fun setAutoIncrementStart()
 
+    // Добавьте этот вспомогательный метод, чтобы инициализировать таблицу sequence
+    @Query("INSERT OR IGNORE INTO sqlite_sequence (name, seq) VALUES ('exercise_catalog', 10000)")
+    suspend fun ensureSequenceTableExists()
+
     @Insert(onConflict = OnConflictStrategy.IGNORE)
     suspend fun insertAll(items: List<ExerciseCatalogEntity>)
 }
