@@ -3,7 +3,6 @@ package com.example.gymknight.data.repository
 import android.content.Context
 import com.example.gymknight.data.entity.ExerciseCatalogEntity
 import kotlinx.serialization.json.Json
-import javax.inject.Inject
 
 interface ExerciseAssetRepository {
     fun getExercisesFromJson(): List<ExerciseCatalogEntity>

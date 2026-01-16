@@ -2,14 +2,13 @@ package com.example.gymknight.data.repository
 
 import com.example.gymknight.data.database.dao.SetDAO
 import com.example.gymknight.data.entity.SetEntity
-import javax.inject.Inject
 
 interface SetRepository {
     suspend fun insertSet(set: SetEntity)
     suspend fun getNextOrder(exerciseId: Long): Int
 }
 
-class SetRepositoryImpl @Inject constructor(
+class SetRepositoryImpl (
     private val dao: SetDAO
 ): SetRepository{
     override suspend fun insertSet(set: SetEntity) {

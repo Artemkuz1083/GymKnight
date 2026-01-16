@@ -14,7 +14,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import cafe.adriel.voyager.navigator.Navigator
 import cafe.adriel.voyager.navigator.bottomSheet.BottomSheetNavigator
-import com.example.gymknight.navigation.RootNavigationScreen
+import com.example.gymknight.navigation.MainNavigationScreen
 import com.example.gymknight.ui.theme.GymKnightTheme
 
 class MainActivity : ComponentActivity() {
@@ -23,9 +23,8 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
         setContent {
             GymKnightTheme {
-                CompositionLocalProvider(){ }
                 BottomSheetNavigator {
-                    Navigator(RootNavigationScreen())
+                    Navigator(MainNavigationScreen())
                 }
             }
         }

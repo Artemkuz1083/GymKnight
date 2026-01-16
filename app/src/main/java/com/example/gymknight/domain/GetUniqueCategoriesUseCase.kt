@@ -3,7 +3,6 @@ package com.example.gymknight.domain
 import com.example.gymknight.data.entity.ExerciseCatalogEntity
 import com.example.gymknight.data.repository.ExerciseCatalogRepository
 import kotlinx.coroutines.flow.Flow
-import javax.inject.Inject
 
 interface GetUniqueCategoriesUseCase{
     operator fun invoke(): Flow<List<String>>

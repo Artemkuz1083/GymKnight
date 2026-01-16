@@ -55,7 +55,7 @@ dependencies {
     implementation(libs.androidx.compose.ui.graphics)
     implementation(libs.androidx.compose.ui.tooling.preview)
     implementation(libs.androidx.compose.material3)
-    implementation(libs.androidx.material3)
+
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
@@ -78,9 +78,6 @@ dependencies {
     implementation("cafe.adriel.voyager:voyager-koin:$voyager")
     implementation("androidx.lifecycle:lifecycle-viewmodel-compose:2.10.0")
 
-    //dagger
-    implementation("com.google.dagger:dagger:2.56.2")
-    kapt("com.google.dagger:dagger-compiler:2.56.2")
 
     //room
     implementation("androidx.room:room-runtime:2.8.4")

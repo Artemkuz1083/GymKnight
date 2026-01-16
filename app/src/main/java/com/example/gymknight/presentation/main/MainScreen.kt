@@ -9,9 +9,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
@@ -49,7 +47,6 @@ import androidx.compose.ui.unit.sp
 import cafe.adriel.voyager.navigator.LocalNavigator
 import com.example.gymknight.data.relation.ExerciseWithSets
 import com.example.gymknight.navigation.AddExerciseNavigationScreen
-import org.koin.compose.viewmodel.koinViewModel
 import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Date
@@ -62,7 +59,7 @@ val AccentGreen = Color(0xFF4CAF50)
 @Composable
 fun MainScreen() {
 
-    val navigator = LocalNavigator.current?.parent
+    val navigator = LocalNavigator.current
 
     val activity = LocalActivity.current as? ComponentActivity
         ?: throw IllegalStateException("Activity not found")
@@ -113,7 +110,10 @@ fun MainScreenContent(
                         )
                     }
                 },
-                colors = TopAppBarDefaults.topAppBarColors(containerColor = DarkBackground)
+                colors = TopAppBarDefaults.topAppBarColors(
+                    containerColor = DarkBackground,
+                    scrolledContainerColor = DarkBackground
+                )
             )
         },
         containerColor = DarkBackground,

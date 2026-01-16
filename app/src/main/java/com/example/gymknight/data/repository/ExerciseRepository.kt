@@ -5,7 +5,6 @@ import com.example.gymknight.data.database.dao.ExerciseDAO
 import com.example.gymknight.data.entity.ExerciseCatalogEntity
 import com.example.gymknight.data.entity.ExerciseEntity
 import kotlinx.coroutines.flow.Flow
-import javax.inject.Inject
 
 interface ExerciseRepository  {
     suspend fun deleteExercise(exercise: ExerciseEntity): Int
@@ -13,7 +12,7 @@ interface ExerciseRepository  {
     suspend fun addExercise( workoutId: Long, title: String)
 }
 
-class ExerciseRepositoryImpl @Inject constructor(
+class ExerciseRepositoryImpl(
     private val dao: ExerciseDAO,
 ): ExerciseRepository{
     override suspend fun deleteExercise(exercise: ExerciseEntity): Int {

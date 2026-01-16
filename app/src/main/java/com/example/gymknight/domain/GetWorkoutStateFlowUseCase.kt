@@ -3,7 +3,7 @@ package com.example.gymknight.domain
 import com.example.gymknight.data.relation.WorkoutWithExercises
 import com.example.gymknight.data.repository.WorkoutRepository
 import kotlinx.coroutines.flow.StateFlow
-import javax.inject.Inject
+
 
 interface GetWorkoutUseCase {
     operator fun invoke(start: Long, end: Long): StateFlow<WorkoutWithExercises?>
@@ -11,7 +11,7 @@ interface GetWorkoutUseCase {
 
 
 
-class GetWorkoutUseCaseImpl @Inject constructor(
+class GetWorkoutUseCaseImpl (
     private val repository: WorkoutRepository
 ) : GetWorkoutUseCase {
 

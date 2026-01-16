@@ -11,10 +11,8 @@ import java.util.*
 
 interface WorkoutRepository {
 
-    // Найти существующую тренировку на день или создать новую
     suspend fun addWorkout(workout: WorkoutEntity): WorkoutEntity
 
-    // Реактивный поток для UI
     fun getWorkoutByDateStateFlow(start: Long, end: Long): StateFlow<WorkoutWithExercises?>
 }
 
