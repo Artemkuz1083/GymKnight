@@ -28,6 +28,10 @@ interface ExerciseCatalogDAO {
     @Query("UPDATE sqlite_sequence SET seq = 10000 WHERE name = 'exercise_catalog'")
     suspend fun setAutoIncrementStart()
 
+
+    @Query("DELETE FROM exercise_catalog WHERE muscleGroup = :categoryName")
+    suspend fun deleteCategory(categoryName: String)
+
     @Query("INSERT OR IGNORE INTO sqlite_sequence (name, seq) VALUES ('exercise_catalog', 10000)")
     suspend fun ensureSequenceTableExists()
 

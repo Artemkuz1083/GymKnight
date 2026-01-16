@@ -8,6 +8,8 @@ interface ExerciseCatalogRepository{
     fun getExerciseByCategory(category: String): Flow<List<ExerciseCatalogEntity>>
     fun getUniqueCategories(): Flow<List<String>>
 
+    suspend fun deleteCategory(categoryName: String )
+
     suspend fun insertCatalogExercise(exercise: ExerciseCatalogEntity)
 }
 
@@ -20,6 +22,10 @@ class ExerciseCatalogRepositoryImpl(
 
     override fun getUniqueCategories(): Flow<List<String>> {
         return dao.getUniqueCategories()
+    }
+
+    override suspend fun deleteCategory(categoryName: String) {
+        dao.deleteCategory(categoryName)
     }
 
     override suspend fun insertCatalogExercise(exercise: ExerciseCatalogEntity) {

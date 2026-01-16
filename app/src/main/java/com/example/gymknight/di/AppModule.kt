@@ -22,6 +22,8 @@ import com.example.gymknight.domain.AddSetUseCase
 import com.example.gymknight.domain.AddSetUseCaseImpl
 import com.example.gymknight.domain.AddWorkoutUseCase
 import com.example.gymknight.domain.AddWorkoutUseCaseImpl
+import com.example.gymknight.domain.DeleteCategoryUseCase
+import com.example.gymknight.domain.DeleteCategoryUseCaseImpl
 import com.example.gymknight.domain.DeleteExerciseUseCase
 import com.example.gymknight.domain.DeleteExerciseUseCaseImpl
 import com.example.gymknight.domain.DeleteSetUseCase
@@ -96,6 +98,8 @@ val appModule = module {
     factory { DeleteSetUseCaseImpl(get()) } bind DeleteSetUseCase::class
 
     factory { UpdateSetUseCaseImpl(get()) } bind UpdateSetUseCase::class
+
+    factory<DeleteCategoryUseCase> { DeleteCategoryUseCaseImpl(get()) }
 
 }
 

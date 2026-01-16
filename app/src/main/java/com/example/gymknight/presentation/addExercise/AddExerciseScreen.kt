@@ -5,6 +5,7 @@ import androidx.activity.compose.LocalActivity
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -54,6 +55,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import cafe.adriel.voyager.navigator.LocalNavigator
 import com.example.gymknight.presentation.exerciseByCategory.ExerciseByCategoryVoyagerScreen
 import com.example.gymknight.presentation.main.MainViewModel
@@ -81,6 +83,9 @@ fun AddExerciseScreen(){
             viewModel.addCategoryWithExercise(category, exercise)},
         onCloseClick = {
             navigator?.pop()
+        },
+        onDeleteCategory = {categoryName ->
+            viewModel.deleteCategory(categoryName)
         }
     )
 }
@@ -91,12 +96,14 @@ fun AddExerciseScreenContent(
     categories: List<ExerciseCategory>,
     onCategoryClick: (String) -> Unit,
     onAddCategory: (String,String) -> Unit,
-    onCloseClick: () -> Unit
+    onCloseClick: () -> Unit,
+    onDeleteCategory: (String) -> Unit
 ) {
     var showMenu by remember{ mutableStateOf(false) }
     var showAddCategoryDialog by remember { mutableStateOf(false)}
     var newCategoryName by remember { mutableStateOf("") }
     var newExerciseName by remember { mutableStateOf("") }
+    var categoryToDelete by remember { mutableStateOf<String?>(null) }
     Scaffold(
         topBar = {
             TopAppBar(
@@ -129,7 +136,6 @@ fun AddExerciseScreenContent(
     ) { innerPadding ->
         LazyColumn(
             modifier = Modifier
-                .padding(innerPadding)
                 .fillMaxSize()
                 .padding(horizontal = 16.dp),
             verticalArrangement = Arrangement.spacedBy(8.dp)
@@ -137,15 +143,25 @@ fun AddExerciseScreenContent(
             items(categories) { category ->
                 CategoryItem(
                     category = category,
-                    onClick = {
-                        onCategoryClick(category.name)
-                    }
+                    onClick = { onCategoryClick(category.name) },
+                    onLongClick = { categoryToDelete = category.name }
                 )
             }
 
             item {
                 Spacer(modifier = Modifier.height(80.dp))
             }
+        }
+
+        categoryToDelete?.let { name ->
+            DeleteCategoryDialog(
+                categoryName = name,
+                onDismiss = { categoryToDelete = null },
+                onConfirm = {
+                    onDeleteCategory(name)
+                    categoryToDelete = null
+                }
+            )
         }
 
         if (showAddCategoryDialog) {
@@ -262,13 +278,19 @@ fun mapMuscleGroupToUi(name: String): ExerciseCategory {
 }
 
 @Composable
-fun CategoryItem(category: ExerciseCategory, onClick: () -> Unit) {
+fun CategoryItem(
+    category: ExerciseCategory,
+    onClick: () -> Unit,
+    onLongClick: () -> Unit) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
             .clip(RoundedCornerShape(12.dp))
             .background(CardBackground)
-            .clickable { onClick() }
+            .combinedClickable(
+                onClick = onClick,
+                onLongClick = onLongClick
+            )
             .padding(12.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
@@ -299,7 +321,31 @@ fun CategoryItem(category: ExerciseCategory, onClick: () -> Unit) {
 
 data class ExerciseCategory(val name: String, val icon: Int, val lastTrained: Int? = null)
 
-
+@Composable
+fun DeleteCategoryDialog(
+    categoryName: String,
+    onDismiss: () -> Unit,
+    onConfirm: () -> Unit
+) {
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        containerColor = CardBackground,
+        title = { Text("Удалить категорию?", color = Color.White) },
+        text = {
+            Text("Все упражнения в категории '$categoryName' будут удалены из каталога.", color = Color.Gray)
+        },
+        confirmButton = {
+            TextButton(onClick = onConfirm) {
+                Text("УДАЛИТЬ", color = Color(0xFFCF6679)) // Красный цвет
+            }
+        },
+        dismissButton = {
+            TextButton(onClick = onDismiss) {
+                Text("ОТМЕНА", color = Color.White)
+            }
+        }
+    )
+}
 
 @Preview
 @Composable
@@ -315,7 +361,8 @@ fun AddExerciseScreenPreview() {
             categories = previewCategories,
             onCloseClick = {},
             onAddCategory = {_,_ ->},
-            onCategoryClick = {}
+            onCategoryClick = {},
+            onDeleteCategory = {}
         )
     }
 }
