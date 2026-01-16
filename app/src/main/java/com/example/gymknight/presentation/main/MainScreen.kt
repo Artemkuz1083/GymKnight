@@ -14,10 +14,12 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.DateRange
 import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.DatePicker
@@ -27,6 +29,8 @@ import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -43,12 +47,16 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import cafe.adriel.voyager.navigator.LocalNavigator
+import com.example.gymknight.data.entity.SetEntity
 import com.example.gymknight.data.relation.ExerciseWithSets
 import com.example.gymknight.navigation.AddExerciseNavigationScreen
 import java.text.SimpleDateFormat
+import androidx.compose.ui.text.TextStyle
 import java.util.Calendar
 import java.util.Date
 import java.util.Locale
@@ -192,7 +200,7 @@ fun ExerciseCard(exercise: ExerciseWithSets, viewModel: MainViewModel) {
                             horizontalAlignment = Alignment.CenterHorizontally,
                             modifier = Modifier
                                 .padding(4.dp)
-                                .clickable { showEditSetDialog = true } // <-- Добавляем клик
+                                .clickable { showEditSetDialog = true }
                         ) {
                             Text(text = "${set.weight}кг", color = Color.White)
                             Text(text = "${set.repetitions}пвт", color = Color.Gray, fontSize = 12.sp)
@@ -228,12 +236,12 @@ fun ExerciseCard(exercise: ExerciseWithSets, viewModel: MainViewModel) {
     }
 
     if (showDeleteDialog) {
-        androidx.compose.material3.AlertDialog(
+        AlertDialog(
             onDismissRequest = { showDeleteDialog = false },
             title = { Text("Удаление упражнения") },
             text = { Text("Вы уверены, что хотите удалить это упражнение? Все подходы будут удалены.") },
             confirmButton = {
-                androidx.compose.material3.TextButton(onClick = {
+                TextButton(onClick = {
                     viewModel.deleteExercise(exercise.exercise)
                     showDeleteDialog = false
                 }) {
@@ -241,7 +249,7 @@ fun ExerciseCard(exercise: ExerciseWithSets, viewModel: MainViewModel) {
                 }
             },
             dismissButton = {
-                androidx.compose.material3.TextButton(onClick = { showDeleteDialog = false }) {
+                TextButton(onClick = { showDeleteDialog = false }) {
                     Text("Отмена")
                 }
             }
@@ -251,7 +259,7 @@ fun ExerciseCard(exercise: ExerciseWithSets, viewModel: MainViewModel) {
 
 @Composable
 fun EditSetDialog(
-    set: com.example.gymknight.data.entity.SetEntity,
+    set: SetEntity,
     onDismiss: () -> Unit,
     onDelete: () -> Unit,
     onUpdate: (Double, Int) -> Unit
@@ -259,44 +267,76 @@ fun EditSetDialog(
     var weightText by remember { mutableStateOf(set.weight.toString()) }
     var repetitionsText by remember { mutableStateOf(set.repetitions.toString()) }
 
-    androidx.compose.material3.AlertDialog(
+    AlertDialog(
         onDismissRequest = onDismiss,
+        containerColor = Color(0xFF1E1E1E),
         title = {
-            Row(verticalAlignment = Alignment.CenterVertically) {
-                Text("Изменить подход")
-                Spacer(Modifier.weight(1f))
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Text(
+                    text = "Редактировать подход",
+                    color = Color.White,
+                    fontSize = 20.sp,
+                    fontWeight = FontWeight.Bold
+                )
                 IconButton(onClick = onDelete) {
-                    Icon(Icons.Default.Delete, contentDescription = null, tint = Color.Red)
+                    Icon(
+                        imageVector = Icons.Default.Delete,
+                        contentDescription = "Удалить сет",
+                        tint = Color(0xFFCF6679)
+                    )
                 }
             }
         },
         text = {
-            Column {
-                androidx.compose.material3.TextField(
+            Column(verticalArrangement = Arrangement.spacedBy(16.dp)) {
+                OutlinedTextField(
                     value = weightText,
                     onValueChange = { weightText = it },
-                    label = { Text("Вес (кг)") }
+                    label = { Text("Вес (кг)", color = Color.Gray) },
+                    textStyle = TextStyle(color = Color.White),
+                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
+                    singleLine = true,
+                    colors = OutlinedTextFieldDefaults.colors(
+                        focusedBorderColor = AccentGreen,
+                        unfocusedBorderColor = Color.Gray
+                    )
                 )
-                androidx.compose.material3.TextField(
+                OutlinedTextField(
                     value = repetitionsText,
                     onValueChange = { repetitionsText = it },
-                    label = { Text("Повторения") }
+                    label = { Text("Повторения", color = Color.Gray) },
+                    textStyle = TextStyle(color = Color.White),
+                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+                    singleLine = true,
+                    colors = OutlinedTextFieldDefaults.colors(
+                        focusedBorderColor = AccentGreen,
+                        unfocusedBorderColor = Color.Gray
+                    )
                 )
             }
         },
         confirmButton = {
-            TextButton(onClick = {
-                val w = weightText.toDoubleOrNull() ?: set.weight
-                val r = repetitionsText.toIntOrNull() ?: set.repetitions
-                onUpdate(w, r)
-            }) { Text("Сохранить", color = AccentGreen) }
+            TextButton(
+                onClick = {
+                    val w = weightText.toDoubleOrNull() ?: set.weight
+                    val r = repetitionsText.toIntOrNull() ?: set.repetitions
+                    onUpdate(w, r)
+                }
+            ) {
+                Text("Сохранить", color = AccentGreen, fontWeight = FontWeight.Bold)
+            }
         },
         dismissButton = {
-            TextButton(onClick = onDismiss) { Text("Отмена", color = Color.White) }
+            TextButton(onClick = onDismiss) {
+                Text("Отмена", color = Color.White)
+            }
         }
     )
 }
-
 @Composable
 fun AddSetDialog(
     onDismiss: () -> Unit,
@@ -305,27 +345,48 @@ fun AddSetDialog(
     var weightText by remember { mutableStateOf("") }
     var repetitionsText by remember { mutableStateOf("") }
 
-    androidx.compose.material3.AlertDialog(
+    AlertDialog(
         onDismissRequest = onDismiss,
-        title = { Text("Добавить подход") },
+        containerColor = Color(0xFF1E1E1E),
+        title = {
+            Text(
+                text = "Добавить подход",
+                color = Color.White,
+                fontWeight = FontWeight.Bold
+            )
+        },
         text = {
-            Column {
-                androidx.compose.material3.TextField(
+            Column(verticalArrangement = Arrangement.spacedBy(16.dp)) {
+                OutlinedTextField(
                     value = weightText,
                     onValueChange = { weightText = it },
-                    label = { Text("Вес (кг)") },
-                    singleLine = true
+                    label = { Text("Вес (кг)", color = Color.Gray) },
+                    textStyle = TextStyle(color = Color.White),
+                    singleLine = true,
+                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
+                    colors = OutlinedTextFieldDefaults.colors(
+                        focusedBorderColor = Color(0xFF00E676),
+                        unfocusedBorderColor = Color.Gray,
+                        focusedLabelColor = Color(0xFF00E676)
+                    )
                 )
-                androidx.compose.material3.TextField(
+                OutlinedTextField(
                     value = repetitionsText,
                     onValueChange = { repetitionsText = it },
-                    label = { Text("Повторения") },
-                    singleLine = true
+                    label = { Text("Повторения", color = Color.Gray) },
+                    textStyle = TextStyle(color = Color.White),
+                    singleLine = true,
+                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+                    colors = OutlinedTextFieldDefaults.colors(
+                        focusedBorderColor = Color(0xFF00E676),
+                        unfocusedBorderColor = Color.Gray,
+                        focusedLabelColor = Color(0xFF00E676)
+                    )
                 )
             }
         },
         confirmButton = {
-            androidx.compose.material3.TextButton(onClick = {
+            TextButton(onClick = {
                 val weight = weightText.toDoubleOrNull()
                 val repetitions = repetitionsText.toIntOrNull()
                 if (weight != null && repetitions != null) {
@@ -333,12 +394,12 @@ fun AddSetDialog(
                     onDismiss()
                 }
             }) {
-                Text("Добавить")
+                Text("ДОБАВИТЬ", color = Color(0xFF00E676), fontWeight = FontWeight.Bold)
             }
         },
         dismissButton = {
-            androidx.compose.material3.TextButton(onClick = onDismiss) {
-                Text("Отмена")
+            TextButton(onClick = onDismiss) {
+                Text("ОТМЕНА", color = Color.White)
             }
         }
     )

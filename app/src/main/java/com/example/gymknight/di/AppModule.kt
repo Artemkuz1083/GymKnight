@@ -73,29 +73,29 @@ val appModule = module {
     single { WorkoutRepositoryImpl(get()) } bind WorkoutRepository::class
 
     // Use Cases
-    single { GetWorkoutUseCaseImpl(get()) } bind GetWorkoutUseCase::class
+    factory { GetWorkoutUseCaseImpl(get()) } bind GetWorkoutUseCase::class
 
-    single { GetExerciseByCategoryUseCaseImpl(get()) } bind GetExerciseByCategoryUseCase::class
+    factory { GetExerciseByCategoryUseCaseImpl(get()) } bind GetExerciseByCategoryUseCase::class
 
-    single { GetWorkoutByDateUseCaseImpl(get()) } bind GetWorkoutByDateUseCase::class
+    factory { GetWorkoutByDateUseCaseImpl(get()) } bind GetWorkoutByDateUseCase::class
 
-    single { AddExerciseUseCaseImpl(get()) } bind AddExerciseUseCase::class
+    factory { AddExerciseUseCaseImpl(get()) } bind AddExerciseUseCase::class
 
-    single { AddWorkoutUseCaseImpl(get()) } bind AddWorkoutUseCase::class
+    factory { AddWorkoutUseCaseImpl(get()) } bind AddWorkoutUseCase::class
 
-    single { AddSetUseCaseImpl(get()) } bind AddSetUseCase::class
+    factory { AddSetUseCaseImpl(get()) } bind AddSetUseCase::class
 
-    single { DeleteExerciseUseCaseImpl(get()) } bind DeleteExerciseUseCase::class
+    factory { DeleteExerciseUseCaseImpl(get()) } bind DeleteExerciseUseCase::class
 
-    single { GetUniqueCategoriesUseCaseImpl(get()) } bind GetUniqueCategoriesUseCase::class
+    factory { GetUniqueCategoriesUseCaseImpl(get()) } bind GetUniqueCategoriesUseCase::class
 
-    single { AddCategoryUseCaseImpl(get()) } bind AddCategoryUseCase::class
+    factory { AddCategoryUseCaseImpl(get()) } bind AddCategoryUseCase::class
 
-    single<AddExerciseToWorkoutUseCase> { AddExerciseToWorkoutUseCaseImpl(get(), get()) }
+    factory<AddExerciseToWorkoutUseCase> { AddExerciseToWorkoutUseCaseImpl(get(), get()) }
 
-    single { DeleteSetUseCaseImpl(get())} bind DeleteSetUseCase::class
+    factory { DeleteSetUseCaseImpl(get()) } bind DeleteSetUseCase::class
 
-    single { UpdateSetUseCaseImpl(get()) } bind UpdateSetUseCase::class
+    factory { UpdateSetUseCaseImpl(get()) } bind UpdateSetUseCase::class
 
 }
 

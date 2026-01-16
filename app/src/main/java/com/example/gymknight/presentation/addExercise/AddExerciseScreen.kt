@@ -30,6 +30,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -48,6 +49,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -147,55 +149,11 @@ fun AddExerciseScreenContent(
         }
 
         if (showAddCategoryDialog) {
-            AlertDialog(
-                onDismissRequest = { showAddCategoryDialog = false },
-                containerColor = CardBackground,
-                title = { Text("Создать категорию", color = Color.White) },
-                text = {
-                    Column(verticalArrangement = Arrangement.spacedBy(10.dp)) {
-                        Text("Чтобы создать категорию, добавьте в нее первое упражнение:", color = Color.Gray, fontSize = 14.sp)
-
-                        OutlinedTextField(
-                            value = newCategoryName,
-                            onValueChange = { newCategoryName = it },
-                            label = { Text("Название категории") },
-                            placeholder = { Text("Напр. Растяжка") },
-                            singleLine = true,
-                            colors = TextFieldDefaults.colors(
-                                focusedTextColor = Color.White,
-                                unfocusedTextColor = Color.White
-                            )
-                        )
-
-                        OutlinedTextField(
-                            value = newExerciseName,
-                            onValueChange = { newExerciseName = it },
-                            label = { Text("Первое упражнение") },
-                            placeholder = { Text("Напр. Шпагат") },
-                            singleLine = true,
-                            colors = TextFieldDefaults.colors(
-                                focusedTextColor = Color.White,
-                                unfocusedTextColor = Color.White
-                            )
-                        )
-                    }
-                },
-                confirmButton = {
-                    TextButton(onClick = {
-                        if (newCategoryName.isNotBlank() && newExerciseName.isNotBlank()) {
-                            onAddCategory(newCategoryName, newExerciseName)
-                            showAddCategoryDialog = false
-                            newCategoryName = ""
-                            newExerciseName = ""
-                        }
-                    }) {
-                        Text("Добавить", color = Color.Green)
-                    }
-                },
-                dismissButton = {
-                    TextButton(onClick = { showAddCategoryDialog = false }) {
-                        Text("Отмена", color = Color.Red)
-                    }
+            CreateCategoryDialog(
+                onDismiss = { showAddCategoryDialog = false },
+                onConfirm = { cat, exe ->
+                    onAddCategory(cat, exe)
+                    showAddCategoryDialog = false
                 }
             )
         }
@@ -215,6 +173,77 @@ fun AddExerciseScreenContent(
             )
         }
     }
+}
+
+
+@Composable
+fun CreateCategoryDialog(
+    onDismiss: () -> Unit,
+    onConfirm: (category: String, exercise: String) -> Unit
+) {
+    var categoryName by remember { mutableStateOf("") }
+    var exerciseName by remember { mutableStateOf("") }
+
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        containerColor = Color(0xFF1E1E1E),
+        title = {
+            Text(
+                text = "Новая категория",
+                color = Color.White,
+                fontWeight = FontWeight.Bold
+            )
+        },
+        text = {
+            Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
+                Text(
+                    text = "Добавьте категорию и первое упражнение для нее",
+                    color = Color.Gray,
+                    fontSize = 14.sp
+                )
+
+                OutlinedTextField(
+                    value = categoryName,
+                    onValueChange = { categoryName = it },
+                    label = { Text("Название категории", color = Color.Gray) },
+                    placeholder = { Text("Напр. Растяжка", color = Color.DarkGray) },
+                    textStyle = TextStyle(color = Color.White),
+                    singleLine = true,
+                    colors = OutlinedTextFieldDefaults.colors(
+                        focusedBorderColor = Color(0xFF00E676),
+                        unfocusedBorderColor = Color.Gray
+                    )
+                )
+
+                OutlinedTextField(
+                    value = exerciseName,
+                    onValueChange = { exerciseName = it },
+                    label = { Text("Первое упражнение", color = Color.Gray) },
+                    placeholder = { Text("Напр. Шпагат", color = Color.DarkGray) },
+                    textStyle = TextStyle(color = Color.White),
+                    singleLine = true,
+                    colors = OutlinedTextFieldDefaults.colors(
+                        focusedBorderColor = Color(0xFF00E676),
+                        unfocusedBorderColor = Color.Gray
+                    )
+                )
+            }
+        },
+        confirmButton = {
+            TextButton(onClick = {
+                if (categoryName.isNotBlank() && exerciseName.isNotBlank()) {
+                    onConfirm(categoryName, exerciseName)
+                }
+            }) {
+                Text("СОЗДАТЬ", color = Color(0xFF00E676), fontWeight = FontWeight.Bold)
+            }
+        },
+        dismissButton = {
+            TextButton(onClick = onDismiss) {
+                Text("ОТМЕНА", color = Color.White)
+            }
+        }
+    )
 }
 
 fun mapMuscleGroupToUi(name: String): ExerciseCategory {
