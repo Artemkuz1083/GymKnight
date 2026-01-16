@@ -24,6 +24,8 @@ import com.example.gymknight.domain.AddWorkoutUseCase
 import com.example.gymknight.domain.AddWorkoutUseCaseImpl
 import com.example.gymknight.domain.DeleteExerciseUseCase
 import com.example.gymknight.domain.DeleteExerciseUseCaseImpl
+import com.example.gymknight.domain.DeleteSetUseCase
+import com.example.gymknight.domain.DeleteSetUseCaseImpl
 import com.example.gymknight.domain.GetExerciseByCategoryUseCase
 import com.example.gymknight.domain.GetExerciseByCategoryUseCaseImpl
 import com.example.gymknight.domain.GetUniqueCategoriesUseCase
@@ -32,6 +34,8 @@ import com.example.gymknight.domain.GetWorkoutByDateUseCase
 import com.example.gymknight.domain.GetWorkoutByDateUseCaseImpl
 import com.example.gymknight.domain.GetWorkoutUseCase
 import com.example.gymknight.domain.GetWorkoutUseCaseImpl
+import com.example.gymknight.domain.UpdateSetUseCase
+import com.example.gymknight.domain.UpdateSetUseCaseImpl
 import com.example.gymknight.presentation.main.MainViewModel
 import org.koin.android.ext.koin.androidContext
 import org.koin.core.module.dsl.viewModel
@@ -88,6 +92,10 @@ val appModule = module {
     single { AddCategoryUseCaseImpl(get()) } bind AddCategoryUseCase::class
 
     single<AddExerciseToWorkoutUseCase> { AddExerciseToWorkoutUseCaseImpl(get(), get()) }
+
+    single { DeleteSetUseCaseImpl(get())} bind DeleteSetUseCase::class
+
+    single { UpdateSetUseCaseImpl(get()) } bind UpdateSetUseCase::class
 
 }
 

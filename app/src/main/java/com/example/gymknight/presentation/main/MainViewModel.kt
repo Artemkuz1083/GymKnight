@@ -25,7 +25,10 @@ import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import androidx.compose.runtime.State
 import androidx.compose.runtime.snapshotFlow
+import com.example.gymknight.data.entity.SetEntity
 import com.example.gymknight.domain.AddExerciseToWorkoutUseCase
+import com.example.gymknight.domain.DeleteSetUseCase
+import com.example.gymknight.domain.UpdateSetUseCase
 import kotlinx.coroutines.flow.flatMapLatest
 import java.util.Calendar
 
@@ -42,7 +45,9 @@ class MainViewModel(
     private val deleteExerciseUseCase: DeleteExerciseUseCase,
     private val getUniqueCategoriesUseCase: GetUniqueCategoriesUseCase,
     private val addCategoryUseCase: AddCategoryUseCase,
-    private val addExerciseToWorkoutUseCase: AddExerciseToWorkoutUseCase
+    private val addExerciseToWorkoutUseCase: AddExerciseToWorkoutUseCase,
+    private val deleteSetUseCase: DeleteSetUseCase,
+    private val updateSetUseCase: UpdateSetUseCase
     ) : ViewModel() {
 
 
@@ -159,6 +164,18 @@ class MainViewModel(
             val date = selectedDate.value
 
             addExerciseToWorkoutUseCase(date, exerciseName)
+        }
+    }
+
+    fun updateSet(set: SetEntity){
+        viewModelScope.launch(Dispatchers.IO) {
+            updateSetUseCase(set)
+        }
+    }
+
+    fun deleteSet(set: SetEntity){
+        viewModelScope.launch {
+            deleteSetUseCase(set)
         }
     }
 

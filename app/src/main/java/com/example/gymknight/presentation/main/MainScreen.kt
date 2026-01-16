@@ -3,6 +3,7 @@ package com.example.gymknight.presentation.main
 import android.text.format.DateUtils.isToday
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.LocalActivity
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -168,7 +169,7 @@ fun ExerciseCard(exercise: ExerciseWithSets, viewModel: MainViewModel) {
     var showDeleteDialog by remember { mutableStateOf(false) }
 
     Card(
-        colors = CardDefaults.cardColors(containerColor = CardBackground), // Цвет карточки
+        colors = CardDefaults.cardColors(containerColor = CardBackground),
         modifier = Modifier.fillMaxWidth()
     ) {
         Column(modifier = Modifier.padding(16.dp)) {
@@ -186,9 +187,30 @@ fun ExerciseCard(exercise: ExerciseWithSets, viewModel: MainViewModel) {
             if (exercise.sets.isNotEmpty()) {
                 LazyRow(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
                     items(exercise.sets.sortedBy { it.order }) { set ->
-                        Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                        var showEditSetDialog by remember { mutableStateOf(false) }
+                        Column(
+                            horizontalAlignment = Alignment.CenterHorizontally,
+                            modifier = Modifier
+                                .padding(4.dp)
+                                .clickable { showEditSetDialog = true } // <-- Добавляем клик
+                        ) {
                             Text(text = "${set.weight}кг", color = Color.White)
                             Text(text = "${set.repetitions}пвт", color = Color.Gray, fontSize = 12.sp)
+                        }
+
+                        if (showEditSetDialog) {
+                            EditSetDialog(
+                                set = set,
+                                onDismiss = { showEditSetDialog = false },
+                                onDelete = {
+                                    viewModel.deleteSet(set)
+                                    showEditSetDialog = false
+                                },
+                                onUpdate = { weight, reps ->
+                                    viewModel.updateSet(set.copy(weight = weight, repetitions = reps))
+                                    showEditSetDialog = false
+                                }
+                            )
                         }
                     }
                 }
@@ -225,6 +247,54 @@ fun ExerciseCard(exercise: ExerciseWithSets, viewModel: MainViewModel) {
             }
         )
     }
+}
+
+@Composable
+fun EditSetDialog(
+    set: com.example.gymknight.data.entity.SetEntity,
+    onDismiss: () -> Unit,
+    onDelete: () -> Unit,
+    onUpdate: (Double, Int) -> Unit
+) {
+    var weightText by remember { mutableStateOf(set.weight.toString()) }
+    var repetitionsText by remember { mutableStateOf(set.repetitions.toString()) }
+
+    androidx.compose.material3.AlertDialog(
+        onDismissRequest = onDismiss,
+        title = {
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Text("Изменить подход")
+                Spacer(Modifier.weight(1f))
+                IconButton(onClick = onDelete) {
+                    Icon(Icons.Default.Delete, contentDescription = null, tint = Color.Red)
+                }
+            }
+        },
+        text = {
+            Column {
+                androidx.compose.material3.TextField(
+                    value = weightText,
+                    onValueChange = { weightText = it },
+                    label = { Text("Вес (кг)") }
+                )
+                androidx.compose.material3.TextField(
+                    value = repetitionsText,
+                    onValueChange = { repetitionsText = it },
+                    label = { Text("Повторения") }
+                )
+            }
+        },
+        confirmButton = {
+            TextButton(onClick = {
+                val w = weightText.toDoubleOrNull() ?: set.weight
+                val r = repetitionsText.toIntOrNull() ?: set.repetitions
+                onUpdate(w, r)
+            }) { Text("Сохранить", color = AccentGreen) }
+        },
+        dismissButton = {
+            TextButton(onClick = onDismiss) { Text("Отмена", color = Color.White) }
+        }
+    )
 }
 
 @Composable
